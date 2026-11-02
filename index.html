@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>FINE Alaseo · 홈(믹스안 기준) 프로토타입</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: '#E96E0A',
+          ink: '#20262D',
+          sub: '#626B76',
+          sec: '#4D5C70',
+          line: '#DDE1E6',
+          page: '#F5F6F8',
+          peach: '#FFF0E4',
+        },
+        fontFamily: {
+          kr: ['"Noto Sans KR"', '"Noto Sans CJK KR"', '"Apple SD Gothic Neo"', '"Malgun Gothic"', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html, body { height: 100%; }
+  body { -webkit-tap-highlight-color: transparent; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+
+  /* ---------- iPhone frame (desktop) ---------- */
+  .device { width: 399px; height: 836px; padding: 12px; border-radius: 60px; background: #111318;
+            box-shadow: 0 30px 80px rgba(17,19,24,.35), inset 0 0 0 2px #2a2d33; }
+  .screen { width: 375px; height: 812px; border-radius: 48px; }
+  /* PC 프레임: 다이내믹 아일랜드 영역만큼 위쪽 여백 */
+  #scroller { padding-top: 47px; }
+
+  /* ---------- Full-screen on real phones ---------- */
+  @media (max-width: 440px) {
+    /* 실제 폰: 가짜 상태 표시줄 없이 기기 안전 영역만 확보 */
+    #scroller { padding-top: env(safe-area-inset-top, 0px); }
+    body { background: #F5F6F8 !important; }
+    .stage { padding: 0 !important; min-height: 100%; }
+    .device { width: 100vw; height: 100dvh; padding: 0; border-radius: 0; box-shadow: none; background: transparent; }
+    .screen { width: 100vw; height: 100dvh; border-radius: 0; }
+    .island, .home-indicator-frame { display: none; }
+  }
+
+  /* ---------- Keyboard (simulated iOS system keyboard) ---------- */
+  .kb { transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1); background: #D1D4DA; }
+  .kb.open { transform: translateY(0); }
+  .key { height: 42px; border-radius: 6px; background: #fff; box-shadow: 0 1px 0 #8C8E93;
+         display: flex; align-items: center; justify-content: center; font-size: 21px; color: #111;
+         user-select: none; -webkit-user-select: none; cursor: pointer; transition: background .06s; }
+  .key.fn { background: #ABB1BC; font-size: 15px; }
+  .key:active, .key.pressed { background: #B9BDC5; }
+  .key.fn:active, .key.fn.pressed { background: #fff; }
+  .key.return { background: #E96E0A; color: #fff; font-size: 15px; font-weight: 700; }
+  .key.return.dim { background: #ABB1BC; color: #111; font-weight: 400; }
+
+  .caret { display: inline-block; width: 2px; height: 16px; background: #E96E0A; margin-left: 1px;
+           vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+  .caret.hidden { display: none; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- Tab bar glass edge (1px gradient stroke: white → transparent) ---------- */
+  .glass-edge { position: relative; }
+  .glass-edge::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+    background: linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0) var(--edge-stop, 100%));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; }
+
+  /* ---------- Status badge (주행 중 / 주차 중) ---------- */
+  .badge-driving { background: #E5F5ED; color: #216E4D; }
+  .badge-parking { background: #E8F0FF; color: #335EA6; }
+
+  .tap { transition: transform .12s, background-color .12s; }
+  .tap:active { transform: scale(.98); }
+
+  .toast { opacity: 0; transform: translate(-50%, 8px); transition: all .25s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body class="bg-[#E4E7EC] font-kr">
+<div class="stage min-h-full flex items-center justify-center p-6">
+  <div class="device">
+    <div id="screen" class="screen relative overflow-hidden bg-page">
+
+      <!-- Dynamic Island -->
+      <div class="island absolute top-[11px] left-1/2 -translate-x-1/2 w-[120px] h-[34px] bg-black rounded-full z-[90]"></div>
+
+      <!-- Scrollable content (상태 표시줄 없음: 실제 폰에서는 기기 상태 표시줄 사용) -->
+      <div id="scroller" class="absolute inset-0 overflow-y-auto no-scrollbar pb-[104px] overscroll-contain">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between px-6 py-[10px]">
+          <h1 class="text-[21px] font-black text-brand leading-[28px] tracking-tight">FINE Alaseo</h1>
+          <button class="relative w-[44px] h-[44px] rounded-full flex items-center justify-center" aria-label="알림">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 14.67V10.08a5.5 5.5 0 0 1 11 0v4.59l1.38 1.83H4.13l1.37-1.83Z"/><path d="M9.17 18.79a1.83 1.83 0 0 0 3.66 0"/></svg>
+            <span class="absolute top-[8px] right-[7px] w-2 h-2 rounded-full bg-brand"></span>
+          </button>
+        </header>
+
+        <main class="px-6 pt-4 pb-[10px] flex flex-col gap-[15px]">
+
+          <!-- Vehicle row: 차량명 + 상태 배지 -->
+          <section class="flex items-center justify-between h-[22px]">
+            <div class="flex items-center gap-2">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.58 10.08 6.05 6.05a1.9 1.9 0 0 1 1.74-1.19h6.42a1.9 1.9 0 0 1 1.74 1.19l1.47 4.03"/><rect x="2.75" y="10.08" width="16.5" height="5.5" rx="1.83"/><path d="M5.96 15.58v1.84M16.04 15.58v1.84"/><circle cx="6.87" cy="12.83" r=".73"/><circle cx="15.12" cy="12.83" r=".73"/></svg>
+              <span class="text-[14px] font-bold text-ink">나의 쏘나타</span>
+            </div>
+            <!-- 프로토타입 전용: 배지를 탭하면 주행/주차 모드 전환 (실서비스는 차량 상태값으로 자동 결정) -->
+            <button id="modeBtn" type="button" class="relative -my-[10px] py-[10px] pl-3 -mr-1 pr-1" aria-label="주행/주차 모드 전환(프로토타입)">
+              <span id="modeBadge" class="badge-driving inline-flex items-center h-[19px] px-[7px] rounded-[5px] text-[11px] leading-[13px] transition-colors">주행 중</span>
+            </button>
+          </section>
+
+          <!-- Greeting -->
+          <section>
+            <p class="text-[26px] font-black text-ink leading-[40px]">오늘도 안전하게.<br/>내 차의 기록을 한눈에.</p>
+          </section>
+
+          <!-- Event report card: 주행 모드 → 주차 리포트 / 주차 모드 → 주행 리포트 -->
+          <section id="eventCard" class="tap rounded-2xl bg-ink px-[25px] py-[15px] flex flex-col gap-[9px] transition-opacity duration-200"></section>
+
+          <!-- AI quick nav -->
+          <section class="grid grid-cols-3">
+            <div class="tap flex flex-col items-center gap-[5px] py-[6px]">
+              <svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11.78" cy="11.78" r="8.16"/><path d="M18.13 18.13l7.25 7.25M8.16 14.5v-3.63M11.78 14.5V8.16M15.41 14.5V9.06"/></svg>
+              <div class="flex items-center gap-[3px]"><span class="text-[14px] font-bold text-ink">사고 분석</span><span class="px-[3px] rounded-[4px] bg-brand text-white text-[10px] font-black leading-[14px]">AI</span></div>
+              <span class="text-[11px] text-sub">사고 과실비율 분석</span>
+            </div>
+            <div class="tap flex flex-col items-center gap-[5px] py-[6px] border-l border-line">
+              <svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M25.37 5.44a7.25 7.25 0 0 1-9.06 9.06l-9.06 9.97a3.85 3.85 0 0 1-5.44-5.44l9.97-9.06a7.25 7.25 0 0 1 9.06-9.06l-4.53 4.53.91 4.53 4.53.91 3.62-5.44Z"/></svg>
+              <div class="flex items-center gap-[3px]"><span class="text-[14px] font-bold text-ink">수리 견적</span><span class="px-[3px] rounded-[4px] bg-brand text-white text-[10px] font-black leading-[14px]">AI</span></div>
+              <span class="text-[11px] text-sub">차량 수리 비 확인</span>
+            </div>
+            <div class="tap flex flex-col items-center gap-[5px] py-[6px] border-l border-line">
+              <svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 1.81l10.88 4.53v8.16c0 6.34-10.88 12.69-10.88 12.69S3.63 20.84 3.63 14.5V6.34L14.5 1.81Z"/><path d="M9.06 14.5l3.63 3.63 7.25-8.16"/></svg>
+              <span class="text-[14px] font-bold text-ink">위반 신고</span>
+              <span class="text-[11px] text-sub">교통위반 신고하기</span>
+            </div>
+          </section>
+
+          <!-- Chatbot input (tap → system keyboard) -->
+          <section id="chatInput" class="h-[52px] rounded-[40px] bg-white/95 border border-[#DCE1E7] shadow-[0_8px_24px_rgba(73,119,200,0.05)] flex items-center gap-[10px] pl-4 pr-[10px] cursor-text transition-colors">
+            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" class="shrink-0"><path d="M25 15l-6.67-2.5L25 10l2.5-6.67L30 10l6.67 2.5L30 15l-2.5 6.67L25 15ZM11.67 28.33L3.33 25l8.34-3.33L15 13.33l3.33 8.34L26.67 25l-8.34 3.33L15 36.67l-3.33-8.34Z" fill="#5E6470"/></svg>
+            <div class="flex-1 min-w-0 text-[13px] leading-[18px] truncate">
+              <span id="chatPlaceholder" class="text-[#8B9BB7] text-[12px]">궁금한 내용을 입력하세요...</span><span id="chatText" class="text-ink"></span><span id="caret" class="caret hidden"></span>
+            </div>
+            <button id="sendBtn" class="w-9 h-9 rounded-full bg-white border-2 border-[#EA580C] flex items-center justify-center shrink-0" aria-label="보내기">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15.83V4.17M15 9.17l-5-5-5 5"/></svg>
+            </button>
+          </section>
+
+          <!-- 나의 안전운전 리포트 -->
+          <section class="flex flex-col gap-4 pt-[10px]">
+            <div class="flex items-center justify-between">
+              <h2 class="text-[19px] font-bold text-ink">나의 안전운전 리포트</h2>
+              <span class="text-[13px] font-bold text-ink underline underline-offset-2">주행·주차 리포트</span>
+            </div>
+            <div class="tap rounded-[14px] bg-peach px-5 py-[26px] flex items-center gap-3">
+              <div class="flex-1 flex flex-col gap-[6px]">
+                <span class="text-[11px] font-bold text-ink">전체 주행 종합 평가</span>
+                <span class="text-[18px] font-black text-ink">나의 누적 안전운전 점수</span>
+                <span class="text-[14px] text-sub">기록된 18번의 주행을 종합했어요.</span>
+                <span class="text-[13px] font-bold text-ink underline underline-offset-2">운전 습관 확인</span>
+              </div>
+              <div class="flex flex-col items-end">
+                <span class="text-[48px] font-black text-ink leading-[56px]">92</span>
+                <span class="text-[13px] font-medium text-ink">/100</span>
+              </div>
+            </div>
+            <div class="tap flex items-center gap-[18px] py-5 border-b border-line">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.42 2.75h6.41l3.67 3.67v12.83H6.42V2.75Z"/><path d="M12.83 2.75v3.67h3.67M9.17 11h4.58M9.17 14.67h4.58"/></svg>
+              <div class="flex-1 flex flex-col gap-1"><span class="text-[16px] font-bold text-ink">18번의 주행을 한눈에.</span><span class="text-[14px] text-sub">9월 · 총 428 km 주행</span></div>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 4.5 11.25 9l-4.5 4.5"/></svg>
+            </div>
+          </section>
+
+          <!-- Feature area -->
+          <section class="flex flex-col gap-5 pt-[18px]">
+
+            <!-- 가치봄 소개 -->
+            <div class="flex flex-col gap-[10px]">
+              <h2 class="text-[16px] font-bold text-ink">주변을 살피는 작은 관심, 가치봄</h2>
+              <div class="tap rounded-[14px] bg-white border border-line px-[23px] py-[14px] flex flex-col gap-2">
+                <span class="text-[11px] font-bold text-sub">도와줘요</span>
+                <span class="text-[21px] font-black text-ink">테헤란로 근처에 주차하셨나요?</span>
+                <span class="text-[16px] text-sub leading-[22px]">다른 운전자가 당시 상황이 담긴 영상을 찾고 있어요.</span>
+                <div class="flex items-center justify-between pt-[10px]">
+                  <span class="text-[14px] text-sub">9월 20일 · 14:00–15:00 KST</span>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 9h10.5M9.75 13.5 14.25 9l-4.5-4.5"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 내 차의 기록 -->
+            <div class="flex flex-col">
+              <h2 class="text-[18px] font-bold text-sec">내 차의 기록</h2>
+              <div id="recordList" class="flex flex-col"></div>
+            </div>
+
+            <!-- 기기 관리 -->
+            <div class="flex flex-col gap-3">
+              <h2 class="text-[18px] font-bold text-sec">기기 관리</h2>
+              <div id="deviceList" class="grid grid-cols-3 gap-[10px]"></div>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <!-- Tab bar (fixed) -->
+      <nav class="absolute bottom-0 inset-x-0 z-[50] px-3 pt-2 pb-5 pointer-events-none">
+        <div class="glass-edge h-[64px] rounded-full p-[1px] pointer-events-auto" style="--edge-stop:53%">
+          <div class="h-[62px] rounded-full bg-white/[0.92] flex items-center pr-[1px]">
+            <div class="glass-edge h-[62px] w-[70px] rounded-full flex items-center justify-center shrink-0" style="--edge-stop:100%">
+              <div class="w-[64px] h-[54px] rounded-full bg-[#E5E7EB]/80 flex flex-col items-center justify-center gap-[2px]">
+                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 3L4 9.33V21h5.5v-7.04h5V21H20V9.33L12 3Z" fill="#000"/></svg>
+                <span class="text-[10px] font-black text-ink">홈</span>
+              </div>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-[2px]">
+              <svg width="23" height="24" viewBox="0 0 23 24" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.25 4.5H5.75c-1.59 0-2.88 1.34-2.88 3v9c0 1.66 1.29 3 2.88 3h11.5c1.59 0 2.88-1.34 2.88-3v-9c0-1.66-1.29-3-2.88-3Z"/><path d="M9.58 9.2l4.8 2.8-4.8 2.8V9.2Z"/></svg>
+              <span class="text-[10px] font-medium text-sub">보관함</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-[2px]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14c2.6.2 4.5 2.4 4.5 5"/></svg>
+              <span class="text-[10px] font-medium text-sub">가치봄</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-[2px]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l1.6-4.4A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M6.5 17v2M17.5 17v2"/><circle cx="7.5" cy="14" r="0.8"/><circle cx="16.5" cy="14" r="0.8"/></svg>
+              <span class="text-[10px] font-medium text-sub">내 차 관리</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-[2px]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#626B76" stroke="#626B76" stroke-width="1.5"><circle cx="4.67" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19.33" cy="12" r="1"/></svg>
+              <span class="text-[10px] font-medium text-sub">더보기</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Simulated system keyboard -->
+      <div id="keyboard" class="kb absolute bottom-0 inset-x-0 z-[80] pt-2 px-[3px] select-none" aria-hidden="true">
+        <div id="kbRows" class="flex flex-col gap-3"></div>
+        <div class="h-[66px] flex items-start justify-between px-6 pt-[14px]">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A3D42" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A3D42" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div id="toast" class="toast absolute left-1/2 bottom-[120px] z-[95] bg-ink/90 text-white text-[13px] px-4 py-[10px] rounded-full whitespace-nowrap"></div>
+
+      <!-- Home indicator -->
+      <div class="home-indicator-frame absolute bottom-[8px] left-1/2 -translate-x-1/2 w-[134px] h-[5px] rounded-full bg-black z-[100]"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- 내 차의 기록 / 기기 관리 (mock data) ---------------- */
+const ICON = {
+  folder: '<svg width="22" height="23" viewBox="0 0 22 23" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.38C3 5.62 3.62 5 4.38 5H8.5l1.83 2.02h7.8c.76 0 1.37.61 1.37 1.37V16c0 .76-.61 1.38-1.37 1.38H4.38C3.62 17.38 3 16.76 3 16V6.38Z"/></svg>',
+  chart:  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#334259" stroke-width="1.875"><path d="M3 5V21H22M7 18V13M12 18V9M17 18V6"/></svg>',
+  car:    '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.58 10.08 6.05 6.05a1.9 1.9 0 0 1 1.74-1.19h6.42a1.9 1.9 0 0 1 1.74 1.19l1.47 4.03"/><rect x="2.75" y="10.08" width="16.5" height="5.5" rx="1.83"/><path d="M5.96 15.58v1.84M16.04 15.58v1.84"/><circle cx="6.87" cy="12.83" r=".73"/><circle cx="15.12" cy="12.83" r=".73"/></svg>',
+  pin:    '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#246142" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19.25s-5.96-5.13-5.96-10.08a5.96 5.96 0 0 1 11.92 0c0 4.95-5.96 10.08-5.96 10.08Z"/><circle cx="11" cy="9.17" r="2.02"/></svg>',
+  cam:    '<svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 20c-.55 0-1.03-.19-1.43-.58C2.19 19.03 2 18.55 2 18V6c0-.55.19-1.02.58-1.4C2.98 4.2 3.45 4 4 4h12c.55 0 1.02.2 1.4.6.4.38.6.85.6 1.4v4.5l4-4v11l-4-4V18c0 .55-.2 1.03-.6 1.43-.38.38-.85.57-1.4.57H4Zm0-2h12V6H4v12Z" fill="#111827"/></svg>',
+  gear:   '<svg width="21" height="22" viewBox="0 0 21 22"><path d="M7.9 21l-.38-3.2a6 6 0 0 1-1.11-.67l-2.81 1.25L1 13.63l2.43-1.96a4 4 0 0 1 0-1.35L1 8.38l2.6-4.75 2.81 1.25c.17-.13.35-.26.54-.38.19-.11.38-.21.57-.3L7.9 1h5.2l.38 3.2c.2.08.4.18.58.3.18.12.36.24.53.38l2.81-1.25L20 8.38l-2.43 1.95a4 4 0 0 1 0 1.35l2.41 1.95-2.6 4.75-2.79-1.25a6 6 0 0 1-1.11.67L13.1 21H7.9Zm2.65-6.5c.91 0 1.69-.34 2.34-1.03.64-.68.97-1.5.97-2.47s-.33-1.79-.97-2.47A3.1 3.1 0 0 0 10.55 7.5c-.93 0-1.72.34-2.36 1.03A3.5 3.5 0 0 0 7.24 11c0 .97.32 1.79.96 2.47.64.69 1.42 1.03 2.35 1.03Z" fill="#111827"/></svg>',
+  download: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.67v10.08M15.58 9.62 11 13.75 6.42 9.62M4.58 18.33h12.84"/></svg>',
+};
+const CHEV = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 4.5 11.25 9l-4.5 4.5"/></svg>';
+
+const RECORDS = [
+  { icon: 'folder', title: '블랙박스 영상',   sub: '블랙박스 녹화 영상 확인' },
+  { icon: 'chart',  title: '주행/주차 리포트', sub: '주행과 주차 기록 확인' },
+  { icon: 'car',    title: '주정차 위험안내',  sub: '현 위치 주정차 단속 정보 안내' },
+  { icon: 'pin',    title: '내가 가본 곳',     sub: '기록된 방문 장소 확인' },
+];
+document.getElementById('recordList').innerHTML = RECORDS.map(r => `
+  <div class="tap flex items-center gap-[18px] py-5 border-b border-line">
+    <span class="w-6 flex justify-center shrink-0">${ICON[r.icon]}</span>
+    <div class="flex-1 flex flex-col gap-1">
+      <span class="text-[16px] font-bold text-ink">${r.title}</span>
+      <span class="text-[14px] text-sub">${r.sub}</span>
+    </div>
+    ${CHEV}
+  </div>`).join('');
+
+const DEVICES = [
+  { icon: 'cam',      title: '라이브뷰' },
+  { icon: 'gear',     title: '블랙박스 설정' },
+  { icon: 'download', title: '업데이트' },
+];
+document.getElementById('deviceList').innerHTML = DEVICES.map(d => `
+  <div class="tap h-[85px] rounded-[12px] bg-white border border-[#D4DBE8] flex flex-col items-center justify-center gap-[10px] px-1">
+    <span class="h-6 flex items-center justify-center">${ICON[d.icon]}</span>
+    <span class="text-[12px] font-bold text-ink">${d.title}</span>
+  </div>`).join('');
+
+/* ---------------- 주행/주차 모드 전환 (프로토타입 전용) ---------------- */
+const ARROW = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#EA580C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.33 8h9.34M8.67 12l4-4-4-4"/></svg>';
+const BADGE = n => `<span class="absolute w-7 h-7 rounded-full bg-brand text-white text-[16px] font-black flex items-center justify-center" style="left:70px;top:-4px">${n}</span>`;
+const ILLUST = {
+  parking: `
+    <svg width="100" height="96" viewBox="0 0 100 96" fill="none" class="absolute inset-0">
+      <rect x="22" y="12" width="64" height="74" rx="6" stroke="#8A939E" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <rect x="34" y="22" width="40" height="52" rx="9" fill="#D8DDE3"/>
+      <rect x="38" y="30" width="32" height="14" rx="3" fill="#20262D"/>
+      <rect x="38" y="58" width="32" height="5" rx="2" fill="#8A939E"/>
+      <circle cx="41" cy="68" r="2.5" fill="#E96E0A"/><circle cx="67" cy="68" r="2.5" fill="#E96E0A"/>
+    </svg>
+    <span class="absolute left-[6px] top-0 text-[18px] font-bold text-white leading-[22px]">P</span>`,
+  driving: `
+    <svg width="90" height="74" viewBox="0 0 90 74" fill="none" class="absolute" style="left:8px;top:2px">
+      <path fill-rule="evenodd" d="M55.56 16h-2.66v15.33h13.41a.33.33 0 0 0 .31-.45l-3.92-10.01A7.67 7.67 0 0 0 55.56 16ZM27.02 31.33h23V16h-9.48a7.67 7.67 0 0 0-6.46 3.54L26.8 30.93a.26.26 0 0 0 .22.4Z" fill="#fff"/>
+      <path fill-rule="evenodd" d="M73.5 38.04a6.71 6.71 0 0 0-6.71-6.71H27.5C21.15 31.33 16 36.48 16 42.83v1.92a3.83 3.83 0 0 0 3.83 3.83h.92a7.77 7.77 0 0 1 15.42 0h17.16a7.77 7.77 0 0 1 15.42 0h.91a3.83 3.83 0 0 0 3.84-3.83v-6.71Z" fill="#D8DDE3"/>
+      <path d="M64.41 42.54a7.75 7.75 0 1 0-6.74 14 7.75 7.75 0 0 0 6.74-14Zm-32.58 0a7.75 7.75 0 1 0-6.74 14 7.75 7.75 0 0 0 6.74-14Z" fill="#828282"/>
+    </svg>`,
+};
+const MODES = {
+  // 차량이 '주행 중'일 때 → 주차 중 있었던 일(주차 리포트)
+  driving: { status: '주행 중', badge: 'badge-driving', label: '주차 중 있었던 일', title: '주차 이벤트<br/>2건이 있어요.', count: 2, cta: '주차 영상 확인', illust: 'parking', h: 95 },
+  // 차량이 '주차 중'일 때 → 주행 중 있었던 일(주행 리포트)
+  parking: { status: '주차 중', badge: 'badge-parking', label: '주행 중 있었던 일', title: '주행 이벤트<br/>1건이 있어요.', count: 1, cta: '주행 영상 확인', illust: 'driving', h: 87 },
+};
+let vehicleMode = 'driving';
+const eventCard = document.getElementById('eventCard');
+const modeBtn = document.getElementById('modeBtn');
+const modeBadge = document.getElementById('modeBadge');
+function renderMode() {
+  const m = MODES[vehicleMode];
+  modeBadge.textContent = m.status;
+  modeBadge.className = modeBadge.className.replace(/badge-\w+/, m.badge);
+  eventCard.innerHTML = `
+    <p class="text-[12px] font-bold text-white">${m.label}</p>
+    <div class="flex items-center gap-3">
+      <div class="flex-1 flex flex-col gap-[10px]">
+        <p class="text-[22px] font-bold text-white leading-[30px]">${m.title}</p>
+        <p class="text-[12px] text-[#D8DDE3]">남겨진 영상을 확인해 보세요.</p>
+      </div>
+      <div class="relative w-[100px] shrink-0" style="height:${m.h}px">${ILLUST[m.illust]}${BADGE(m.count)}</div>
+    </div>
+    <div class="flex items-center justify-between">
+      <span class="text-[15px] font-bold text-white">${m.cta}</span>
+      <span class="w-[30px] h-[30px] rounded-full bg-white flex items-center justify-center">${ARROW}</span>
+    </div>`;
+}
+modeBtn.addEventListener('click', () => {
+  eventCard.style.opacity = '0';
+  setTimeout(() => {
+    vehicleMode = vehicleMode === 'driving' ? 'parking' : 'driving';
+    renderMode();
+    eventCard.style.opacity = '1';
+  }, 160);
+});
+renderMode();
+
+/* ---------------- Hangul (2-beolsik) composer ---------------- */
+const CHO  = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+const JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+const JONG = ['', 'ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const JUNG_MIX = { 'ㅗㅏ':'ㅘ','ㅗㅐ':'ㅙ','ㅗㅣ':'ㅚ','ㅜㅓ':'ㅝ','ㅜㅔ':'ㅞ','ㅜㅣ':'ㅟ','ㅡㅣ':'ㅢ' };
+const JONG_MIX = { 'ㄱㅅ':'ㄳ','ㄴㅈ':'ㄵ','ㄴㅎ':'ㄶ','ㄹㄱ':'ㄺ','ㄹㅁ':'ㄻ','ㄹㅂ':'ㄼ','ㄹㅅ':'ㄽ','ㄹㅌ':'ㄾ','ㄹㅍ':'ㄿ','ㄹㅎ':'ㅀ','ㅂㅅ':'ㅄ' };
+const split = (map, v) => { for (const k in map) if (map[k] === v) return [k[0], k[1]]; return null; };
+const isVowel = c => JUNG.includes(c);
+
+let committed = '';
+let cur = { cho: '', jung: '', jong: '' };
+
+function render(s) {
+  if (s.cho && s.jung) return String.fromCharCode(0xAC00 + (CHO.indexOf(s.cho) * 21 + JUNG.indexOf(s.jung)) * 28 + JONG.indexOf(s.jong));
+  return s.cho || s.jung || '';
+}
+function commit() { committed += render(cur); cur = { cho: '', jung: '', jong: '' }; }
+
+function inputJamo(c) {
+  if (!isVowel(c)) {                         // consonant
+    if (cur.cho && cur.jung && !cur.jong && JONG.includes(c)) { cur.jong = c; return; }
+    if (cur.jong && JONG_MIX[cur.jong + c]) { cur.jong = JONG_MIX[cur.jong + c]; return; }
+    commit(); cur.cho = c; return;
+  }
+  if (cur.jong) {                            // 받침을 다음 글자 초성으로 이동
+    const pair = split(JONG_MIX, cur.jong);
+    let next;
+    if (pair) { cur.jong = pair[0]; next = pair[1]; } else { next = cur.jong; cur.jong = ''; }
+    commit(); cur = { cho: next, jung: c, jong: '' }; return;
+  }
+  if (cur.jung) {
+    if (JUNG_MIX[cur.jung + c]) { cur.jung = JUNG_MIX[cur.jung + c]; return; }
+    commit(); cur.jung = c; return;
+  }
+  if (cur.cho) { cur.jung = c; return; }
+  cur.jung = c;
+}
+function backspace() {
+  if (cur.jong) { const p = split(JONG_MIX, cur.jong); cur.jong = p ? p[0] : ''; return; }
+  if (cur.jung) { const p = split(JUNG_MIX, cur.jung); cur.jung = p ? p[0] : ''; return; }
+  if (cur.cho)  { cur.cho = ''; return; }
+  committed = committed.slice(0, -1);
+}
+function insertRaw(ch) { commit(); committed += ch; }
+const value = () => committed + render(cur);
+
+/* ---------------- Keyboard layouts ---------------- */
+const LAYOUT = {
+  ko:  [['ㅂ','ㅈ','ㄷ','ㄱ','ㅅ','ㅛ','ㅕ','ㅑ','ㅐ','ㅔ'], ['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'], ['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']],
+  koS: [['ㅃ','ㅉ','ㄸ','ㄲ','ㅆ','ㅛ','ㅕ','ㅑ','ㅒ','ㅖ'], ['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'], ['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']],
+  num: [['1','2','3','4','5','6','7','8','9','0'], ['-','/',':',';','(',')','₩','&','@','"'], ['.',',','?','!',"'"]],
+};
+let mode = 'ko', shift = false;
+
+function buildKeyboard() {
+  const rows = mode === 'num' ? LAYOUT.num : (shift ? LAYOUT.koS : LAYOUT.ko);
+  const k = (label, cls, data, style = '') => `<div class="key ${cls}" data-k="${data}" style="${style}">${label}</div>`;
+  const row = (keys, pad = 0) => `<div class="flex gap-[6px]" style="padding:0 ${pad}px">${keys.map(c => k(c, '', c, 'flex:1')).join('')}</div>`;
+  const shiftIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="${shift ? '#111' : 'none'}" stroke="#111" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 3 12h5v8h8v-8h5z"/></svg>`;
+  const bsIcon = '<svg width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round"><path d="M8 2h15a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 23 18H8l-6.5-8L8 2Z"/><path d="m12 7 6 6m0-6-6 6"/></svg>';
+  const hasText = value().length > 0;
+  document.getElementById('kbRows').innerHTML =
+    row(rows[0]) +
+    row(rows[1], mode === 'num' ? 0 : 18) +
+    `<div class="flex gap-[6px]">
+       ${k(mode === 'num' ? '#+=' : shiftIcon, 'fn', mode === 'num' ? 'noop' : 'shift', 'width:44px')}
+       <div class="flex gap-[6px] flex-1" style="padding:0 6px">${rows[2].map(c => k(c, '', c, 'flex:1')).join('')}</div>
+       ${k(bsIcon, 'fn', 'bs', 'width:44px')}
+     </div>` +
+    `<div class="flex gap-[6px]">
+       ${k(mode === 'num' ? '한글' : '123', 'fn', 'mode', 'width:92px')}
+       ${k('간격', '', 'space', 'flex:1;font-size:15px')}
+       ${k('보내기', 'return' + (hasText ? '' : ' dim'), 'return', 'width:92px')}
+     </div>`;
+}
+
+/* ---------------- Chat input + keyboard behaviour ---------------- */
+const screenEl = document.getElementById('screen');
+const scroller = document.getElementById('scroller');
+const chat = document.getElementById('chatInput');
+const kb = document.getElementById('keyboard');
+const textEl = document.getElementById('chatText');
+const phEl = document.getElementById('chatPlaceholder');
+const caret = document.getElementById('caret');
+let kbOpen = false;
+
+function refreshInput() {
+  const v = value();
+  textEl.textContent = v;
+  phEl.style.display = v ? 'none' : '';
+  const ret = kb.querySelector('[data-k="return"]');
+  if (ret) ret.classList.toggle('dim', !v);
+}
+function openKeyboard() {
+  if (kbOpen) return;
+  kbOpen = true;
+  buildKeyboard();
+  kb.classList.add('open');
+  caret.classList.remove('hidden');
+  chat.style.borderColor = '#E96E0A';
+  const kbH = kb.offsetHeight;
+  scroller.style.paddingBottom = (kbH + 24) + 'px';
+  // iOS처럼 입력창이 키보드 바로 위에 보이도록 스크롤
+  requestAnimationFrame(() => {
+    const chatTop = chat.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+    const target = chatTop - (screenEl.clientHeight - kbH - chat.offsetHeight - 16);
+    scroller.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+  });
+}
+function closeKeyboard() {
+  if (!kbOpen) return;
+  kbOpen = false;
+  commit(); refreshInput();
+  kb.classList.remove('open');
+  caret.classList.add('hidden');
+  chat.style.borderColor = '';
+  setTimeout(() => { if (!kbOpen) scroller.style.paddingBottom = ''; }, 280);
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1600);
+}
+function submit() {
+  if (!value()) return;
+  toast('알아서에게 질문을 보냈어요 (데모)');
+  committed = ''; cur = { cho: '', jung: '', jong: '' };
+  refreshInput(); closeKeyboard();
+}
+
+chat.addEventListener('click', e => {
+  if (e.target.closest('#sendBtn')) { submit(); return; }
+  openKeyboard();
+});
+// 입력창 밖(화면 콘텐츠·탭바)을 탭하면 키보드 닫힘
+document.getElementById('screen').addEventListener('click', e => {
+  if (kbOpen && !e.target.closest('#chatInput') && !e.target.closest('#keyboard')) closeKeyboard();
+});
+
+kb.addEventListener('pointerdown', e => {
+  const keyEl = e.target.closest('.key');
+  if (!keyEl) return;
+  e.preventDefault();
+  keyEl.classList.add('pressed');
+  setTimeout(() => keyEl.classList.remove('pressed'), 90);
+  const k = keyEl.dataset.k;
+  if (k === 'shift') { shift = !shift; buildKeyboard(); return; }
+  if (k === 'mode')  { mode = mode === 'num' ? 'ko' : 'num'; shift = false; buildKeyboard(); return; }
+  if (k === 'noop')  return;
+  if (k === 'bs')    backspace();
+  else if (k === 'space') insertRaw(' ');
+  else if (k === 'return') { submit(); return; }
+  else if (mode === 'num') insertRaw(k);
+  else { inputJamo(k); if (shift) { shift = false; buildKeyboard(); } }
+  refreshInput();
+});
+</script>
+</body>
+</html>
