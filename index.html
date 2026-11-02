@@ -3,521 +3,543 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>FINE Alaseo · 홈(믹스안 기준) 프로토타입</title>
+<title>FINE Alaseo · 앱 프로토타입</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          brand: '#E96E0A',
-          ink: '#20262D',
-          sub: '#626B76',
-          sec: '#4D5C70',
-          line: '#DDE1E6',
-          page: '#F5F6F8',
-          peach: '#FFF0E4',
-        },
-        fontFamily: {
-          kr: ['"Noto Sans KR"', '"Noto Sans CJK KR"', '"Apple SD Gothic Neo"', '"Malgun Gothic"', 'sans-serif'],
-        },
-      },
-    },
-  };
-</script>
 <style>
-  html, body { height: 100%; }
-  body { -webkit-tap-highlight-color: transparent; }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { scrollbar-width: none; }
+/* ================= Base ================= */
+:root{--brand:#E96E0A;--orange:#EA580C;--ink:#20262D;--ink2:#191B1F;--sub:#626B76;--sub2:#8A939E;--sec:#4D5C70;--line:#DDE1E6;--line2:#E6E8EC;--page:#F5F6F8;--bg2:#F4F6FB;--peach:#FFF0E4;--peach2:#FFF4EC;--green:#216E4D;--greenbg:#E5F5ED;--blue:#335EA6;--bluebg:#E8F0FF;--red:#D92D20;--redbg:#FDE2E2;--purple:#7A45D6;--purplebg:#F1EBFC}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:#E4E7EC;color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+.device{width:399px;height:836px;padding:12px;border-radius:60px;background:#111318;box-shadow:0 30px 80px rgba(17,19,24,.35),inset 0 0 0 2px #2a2d33}
+.screen{width:375px;height:812px;border-radius:48px;position:relative;overflow:hidden;background:var(--page)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:999px;z-index:300}
+.hindi{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:999px;background:#000;z-index:300}
+@media (max-width:440px){body{background:var(--page)}.stage{padding:0}.device{width:100vw;height:100dvh;padding:0;border-radius:0;box-shadow:none;background:transparent}.screen{width:100vw;height:100dvh;border-radius:0}.island,.hindi{display:none}}
+.noscroll::-webkit-scrollbar{display:none}.noscroll{scrollbar-width:none}
 
-  /* ---------- iPhone frame (desktop) ---------- */
-  .device { width: 399px; height: 836px; padding: 12px; border-radius: 60px; background: #111318;
-            box-shadow: 0 30px 80px rgba(17,19,24,.35), inset 0 0 0 2px #2a2d33; }
-  .screen { width: 375px; height: 812px; border-radius: 48px; }
-  /* PC 프레임: 다이내믹 아일랜드 영역만큼 위쪽 여백 */
-  #scroller { padding-top: 47px; }
+/* ================= Pages ================= */
+.page{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--page);padding-top:47px}
+@media (max-width:440px){.page{padding-top:env(safe-area-inset-top,0px)}}
+.page.enter{animation:pin .26s cubic-bezier(.2,.8,.2,1)}
+.page.enter-back{animation:pback .22s ease-out}
+.page.fade{animation:fadein .18s ease-out}
+@keyframes pin{from{transform:translateX(30%);opacity:.4}to{transform:none;opacity:1}}
+@keyframes pback{from{transform:translateX(-12%);opacity:.6}to{transform:none;opacity:1}}
+@keyframes fadein{from{opacity:.4}to{opacity:1}}
+.page.white{background:#fff}.page.gray{background:var(--bg2)}
+.body{flex:1;overflow-y:auto;overscroll-behavior:contain}
+.body.tabpad{padding-bottom:104px}
+.hdr{height:52px;display:flex;align-items:center;gap:8px;padding:0 16px;flex-shrink:0;background:inherit}
+.hdr .title{font-size:17px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.hdr .title svg{flex-shrink:0;display:inline-block}
+.hdr .backb{width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin-left:-4px}
+.hdr .rt{font-size:14px;color:var(--sub);font-weight:500}
+.hdr.big .title{font-size:20px;font-weight:900}
+.pad{padding:16px}
+.sec-title{font-size:18px;font-weight:700;color:var(--sec);margin:4px 0 4px}
+.card{background:#fff;border-radius:16px}
+.row{display:flex;align-items:center;gap:12px}
+.list-row{display:flex;align-items:center;gap:14px;padding:16px;border-bottom:1px solid var(--line2);background:#fff;cursor:pointer}
+.list-row:last-child{border-bottom:0}
+.muted{color:var(--sub)}.small{font-size:12px}.bold{font-weight:700}
+.chev{color:#9AA1AB;font-size:18px}
+.tap{cursor:pointer;transition:transform .12s,background .12s}.tap:active{transform:scale(.98)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 8px}
+.chip{flex-shrink:0;font-size:13px;padding:7px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--sec);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:700}
+.pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.p-ing{background:var(--bluebg);color:var(--blue)}.p-done{background:var(--greenbg);color:var(--green)}.p-req{background:#EEF0F3;color:var(--sec)}.p-warn{background:var(--peach);color:var(--orange)}
+.btn{display:flex;align-items:center;justify-content:center;height:51px;border-radius:12px;font-size:16px;font-weight:700;width:100%}
+.btn-primary{background:var(--orange);color:#fff}.btn-primary:disabled{background:#D5D9DF;color:#fff}
+.btn-sub{background:#fff;border:1px solid #CDD2D9;color:var(--ink)}
+.btn-sm{height:34px;padding:0 12px;border:1px solid #CDD2D9;border-radius:8px;font-size:13px;background:#fff;white-space:nowrap}
+.bottom-cta{padding:12px 16px 28px;background:#fff;border-top:1px solid var(--line2);flex-shrink:0}
+.thumb{width:70px;height:70px;border-radius:10px;background:#E1E3E7;flex-shrink:0}
+.vthumb{width:64px;height:64px;border-radius:9px;flex-shrink:0;position:relative;overflow:hidden;background:radial-gradient(circle at 32% 64%,rgba(255,60,60,.9) 0 3px,transparent 4px),radial-gradient(circle at 68% 64%,rgba(255,60,60,.9) 0 3px,transparent 4px),radial-gradient(ellipse at 50% 62%,#c9ccd2 0 14px,transparent 15px),linear-gradient(180deg,#1b2333,#2b3346 55%,#3a3f4a)}
+.vthumb b{position:absolute;left:5px;bottom:3px;font-size:9px;color:#fff}
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.field label{font-size:13px;font-weight:700}
+.input{height:50px;border-radius:12px;background:#fff;border:1px solid var(--line);padding:0 14px;font-size:15px;outline:none;width:100%}
+.input:focus,textarea:focus{border-color:var(--brand)}
+textarea.input{height:120px;padding:14px;resize:none;line-height:1.5}
+.badge-add{width:64px;height:64px;border-radius:12px;background:#E9ECF1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--sub);gap:2px;cursor:pointer;flex-shrink:0}
+.intro{margin:12px 16px;border-radius:12px;background:var(--peach2);padding:14px 16px;display:flex;gap:12px}
+.intro .ic{width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.intro b{font-size:14px;display:block;margin-bottom:3px}.intro p{font-size:12.5px;color:var(--sub);line-height:18px}
+.note{font-size:12px;color:var(--sub);text-align:center;line-height:18px;padding:16px}
+.empty{padding:60px 16px;text-align:center;color:var(--sub);font-size:14px}
 
-  /* ---------- Full-screen on real phones ---------- */
-  @media (max-width: 440px) {
-    /* 실제 폰: 가짜 상태 표시줄 없이 기기 안전 영역만 확보 */
-    #scroller { padding-top: env(safe-area-inset-top, 0px); }
-    body { background: #F5F6F8 !important; }
-    .stage { padding: 0 !important; min-height: 100%; }
-    .device { width: 100vw; height: 100dvh; padding: 0; border-radius: 0; box-shadow: none; background: transparent; }
-    .screen { width: 100vw; height: 100dvh; border-radius: 0; }
-    .island, .home-indicator-frame { display: none; }
-  }
+/* ================= Tab bar ================= */
+.tabbar{position:absolute;left:0;right:0;bottom:0;z-index:150;padding:8px 12px 20px;pointer-events:none;display:none}
+.tabbar.show{display:block}
+.tabbar .wrap{pointer-events:auto;height:64px;border-radius:999px;padding:1px;background:linear-gradient(#fff,rgba(255,255,255,0) 55%),rgba(255,255,255,.35);box-shadow:0 6px 24px rgba(32,38,45,.08)}
+.tabbar .inner{height:62px;border-radius:999px;background:rgba(255,255,255,.94);display:flex;align-items:center;padding:0 3px}
+.tabbar .t{flex:1;height:54px;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--sub);font-weight:500;cursor:pointer}
+.tabbar .t.on{background:rgba(229,231,235,.85);color:var(--ink);font-weight:900}
+.tabbar .t svg{stroke:#626B76}.tabbar .t.on svg{stroke:#111}
 
-  /* ---------- Keyboard (simulated iOS system keyboard) ---------- */
-  .kb { transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1); background: #D1D4DA; }
-  .kb.open { transform: translateY(0); }
-  .key { height: 42px; border-radius: 6px; background: #fff; box-shadow: 0 1px 0 #8C8E93;
-         display: flex; align-items: center; justify-content: center; font-size: 21px; color: #111;
-         user-select: none; -webkit-user-select: none; cursor: pointer; transition: background .06s; }
-  .key.fn { background: #ABB1BC; font-size: 15px; }
-  .key:active, .key.pressed { background: #B9BDC5; }
-  .key.fn:active, .key.fn.pressed { background: #fff; }
-  .key.return { background: #E96E0A; color: #fff; font-size: 15px; font-weight: 700; }
-  .key.return.dim { background: #ABB1BC; color: #111; font-weight: 400; }
+/* ================= Overlay / modal / sheet / toast ================= */
+.dim{position:absolute;inset:0;background:rgba(17,19,24,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;animation:fadein .15s}
+.dim.sheet{align-items:flex-end;padding:0}
+.modal{width:100%;max-width:340px;background:#fff;border-radius:20px;padding:24px 20px 20px;text-align:center}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:12px}
+.modal .q{font-size:15px;margin-bottom:6px}
+.modal .b{font-size:13.5px;color:var(--sub);line-height:20px;margin-bottom:20px;text-align:left}
+.modal .btns{display:flex;gap:8px}
+.modal .btns button{flex:1;height:48px;border-radius:12px;font-weight:700;font-size:15px}
+.mb-cancel{background:var(--bg2);border:1px solid #C9CED6!important}
+.mb-ok{background:var(--orange);color:#fff}.mb-danger{background:#DC2626;color:#fff}
+.sheetbox{width:100%;background:#fff;border-radius:20px 20px 0 0;padding:10px 0 28px;animation:up .22s cubic-bezier(.2,.8,.2,1);max-height:80%;overflow:auto}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheetbox .grab{width:40px;height:4px;border-radius:9px;background:#D5D9DF;margin:0 auto 12px}
+.sheetbox h3{font-size:17px;font-weight:700;padding:4px 20px 12px}
+.toast{position:absolute;left:50%;bottom:120px;transform:translate(-50%,8px);background:rgba(32,38,45,.92);color:#fff;font-size:13px;padding:11px 16px;border-radius:999px;white-space:nowrap;opacity:0;transition:all .25s;z-index:400;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 
-  .caret { display: inline-block; width: 2px; height: 16px; background: #E96E0A; margin-left: 1px;
-           vertical-align: -3px; animation: blink 1s steps(1) infinite; }
-  .caret.hidden { display: none; }
-  @keyframes blink { 50% { opacity: 0; } }
+/* ================= Keyboard ================= */
+.kb{position:absolute;left:0;right:0;bottom:0;z-index:260;background:#D1D4DA;padding:8px 3px 0;transform:translateY(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);user-select:none}
+.kb.open{transform:none}
+.kb .rows{display:flex;flex-direction:column;gap:12px}
+.key{height:42px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8C8E93;display:flex;align-items:center;justify-content:center;font-size:21px;color:#111;cursor:pointer}
+.key.fn{background:#ABB1BC;font-size:15px}.key.pressed{background:#B9BDC5}
+.key.ret{background:var(--brand);color:#fff;font-size:15px;font-weight:700}.key.ret.off{background:#ABB1BC;color:#111;font-weight:400}
+.caret{display:inline-block;width:2px;height:16px;background:var(--brand);margin-left:1px;vertical-align:-3px;animation:blink 1s steps(1) infinite}
+.caret.hidden{display:none}
+@keyframes blink{50%{opacity:0}}
 
-  /* ---------- Tab bar glass edge (1px gradient stroke: white → transparent) ---------- */
-  .glass-edge { position: relative; }
-  .glass-edge::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
-    background: linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0) var(--edge-stop, 100%));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude; }
+/* ================= Home ================= */
+.h-head{display:flex;align-items:center;justify-content:space-between;padding:10px 24px}
+.h-logo{font-size:21px;font-weight:900;color:var(--brand);letter-spacing:-.3px}
+.bell{position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.bell i{position:absolute;top:9px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.h-main{padding:16px 24px 10px;display:flex;flex-direction:column;gap:15px}
+.badge-driving{background:var(--greenbg);color:var(--green)}.badge-parking{background:var(--bluebg);color:var(--blue)}
+.sbadge{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:5px;font-size:11px}
+.evcard{border-radius:16px;background:var(--ink);padding:15px 25px;display:flex;flex-direction:column;gap:9px;cursor:pointer;transition:opacity .2s}
+.qnav{display:grid;grid-template-columns:repeat(3,1fr)}
+.qnav>div{display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 0;cursor:pointer}
+.qnav>div+div{border-left:1px solid var(--line)}
+.ai{font-size:10px;font-weight:900;color:#fff;background:var(--brand);border-radius:4px;padding:0 3px;line-height:14px}
+.chat{height:52px;border-radius:40px;background:rgba(255,255,255,.95);border:1px solid #DCE1E7;box-shadow:0 8px 24px rgba(73,119,200,.05);display:flex;align-items:center;gap:10px;padding:0 10px 0 16px;cursor:text}
+.score{border-radius:14px;background:var(--peach);padding:26px 20px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.f-row{display:flex;align-items:center;gap:18px;padding:20px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.f-row .ic{width:24px;display:flex;justify-content:center;flex-shrink:0}
+.devgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.devgrid>div{height:85px;border-radius:12px;background:#fff;border:1px solid #D4DBE8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:12px;font-weight:700;cursor:pointer}
 
-  /* ---------- Status badge (주행 중 / 주차 중) ---------- */
-  .badge-driving { background: #E5F5ED; color: #216E4D; }
-  .badge-parking { background: #E8F0FF; color: #335EA6; }
-
-  .tap { transition: transform .12s, background-color .12s; }
-  .tap:active { transform: scale(.98); }
-
-  .toast { opacity: 0; transform: translate(-50%, 8px); transition: all .25s; pointer-events: none; }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+/* ================= Gachibom ================= */
+.gb-head{display:flex;align-items:center;justify-content:space-between;padding:10px 16px}
+.gb-act{font-size:13px;font-weight:700;color:var(--orange);background:var(--peach2);border-radius:10px;padding:9px 12px}
+.search{margin:4px 16px 0;height:42px;border-radius:12px;background:#EEF1F5;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;cursor:pointer}
+.map{position:absolute;left:0;right:0;top:0;bottom:0;overflow:hidden;background:#F1EFE8}
+.map svg{position:absolute;inset:0}
+.mpin{position:absolute;transform:translate(-50%,-100%);background:var(--ink);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.mpin:after{content:'';position:absolute;left:50%;bottom:-7px;width:7px;height:7px;border-radius:50%;background:#111;transform:translateX(-50%)}
+.mylo{position:absolute;width:44px;height:44px;border-radius:50%;background:rgba(74,128,255,.18);display:flex;align-items:center;justify-content:center}
+.mylo i{width:14px;height:14px;border-radius:50%;background:#3B6FF5;border:2px solid #fff}
+.mapbtn{position:absolute;left:16px;width:42px;height:42px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.gsheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.06);padding:8px 20px 112px}
+.handle{width:44px;height:5px;border-radius:9px;background:#D5D9DF;margin:0 auto 14px;cursor:grab;touch-action:none}
+.handle-hit{padding:6px 0 4px;touch-action:none;cursor:grab}
+.fab{position:absolute;right:16px;z-index:170;height:50px;padding:0 20px;border-radius:14px;background:var(--orange);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;box-shadow:0 6px 16px rgba(234,88,12,.3);cursor:pointer;transition:background .15s}
+.fab.open{background:#fff;color:var(--ink);box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.fabmenu{position:absolute;right:16px;z-index:170;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden;min-width:200px;animation:pop .16s ease-out;transform-origin:bottom right}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.fabmenu div{display:flex;align-items:center;gap:12px;padding:15px 18px;font-size:15px;font-weight:700;cursor:pointer}
+.fabmenu div+div{border-top:1px solid var(--line2)}
+.fabmenu small{display:block;font-size:12px;font-weight:400;color:var(--sub)}
+.gitem{display:flex;gap:12px;padding:18px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;margin-bottom:8px}
+.t-help{background:#FFEDE5;color:#E0480B}.t-share{background:var(--bluebg);color:#2F62C9}.t-db{background:var(--greenbg);color:var(--green)}
+.gimg{width:72px;height:72px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#9AA7B8,#5D6B7E)}
 </style>
 </head>
-<body class="bg-[#E4E7EC] font-kr">
-<div class="stage min-h-full flex items-center justify-center p-6">
-  <div class="device">
-    <div id="screen" class="screen relative overflow-hidden bg-page">
-
-      <!-- Dynamic Island -->
-      <div class="island absolute top-[11px] left-1/2 -translate-x-1/2 w-[120px] h-[34px] bg-black rounded-full z-[90]"></div>
-
-      <!-- Scrollable content (상태 표시줄 없음: 실제 폰에서는 기기 상태 표시줄 사용) -->
-      <div id="scroller" class="absolute inset-0 overflow-y-auto no-scrollbar pb-[104px] overscroll-contain">
-
-        <!-- Header -->
-        <header class="flex items-center justify-between px-6 py-[10px]">
-          <h1 class="text-[21px] font-black text-brand leading-[28px] tracking-tight">FINE Alaseo</h1>
-          <button class="relative w-[44px] h-[44px] rounded-full flex items-center justify-center" aria-label="알림">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 14.67V10.08a5.5 5.5 0 0 1 11 0v4.59l1.38 1.83H4.13l1.37-1.83Z"/><path d="M9.17 18.79a1.83 1.83 0 0 0 3.66 0"/></svg>
-            <span class="absolute top-[8px] right-[7px] w-2 h-2 rounded-full bg-brand"></span>
-          </button>
-        </header>
-
-        <main class="px-6 pt-4 pb-[10px] flex flex-col gap-[15px]">
-
-          <!-- Vehicle row: 차량명 + 상태 배지 -->
-          <section class="flex items-center justify-between h-[22px]">
-            <div class="flex items-center gap-2">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.58 10.08 6.05 6.05a1.9 1.9 0 0 1 1.74-1.19h6.42a1.9 1.9 0 0 1 1.74 1.19l1.47 4.03"/><rect x="2.75" y="10.08" width="16.5" height="5.5" rx="1.83"/><path d="M5.96 15.58v1.84M16.04 15.58v1.84"/><circle cx="6.87" cy="12.83" r=".73"/><circle cx="15.12" cy="12.83" r=".73"/></svg>
-              <span class="text-[14px] font-bold text-ink">나의 쏘나타</span>
-            </div>
-            <!-- 프로토타입 전용: 배지를 탭하면 주행/주차 모드 전환 (실서비스는 차량 상태값으로 자동 결정) -->
-            <button id="modeBtn" type="button" class="relative -my-[10px] py-[10px] pl-3 -mr-1 pr-1" aria-label="주행/주차 모드 전환(프로토타입)">
-              <span id="modeBadge" class="badge-driving inline-flex items-center h-[19px] px-[7px] rounded-[5px] text-[11px] leading-[13px] transition-colors">주행 중</span>
-            </button>
-          </section>
-
-          <!-- Greeting -->
-          <section>
-            <p class="text-[26px] font-black text-ink leading-[40px]">오늘도 안전하게.<br/>내 차의 기록을 한눈에.</p>
-          </section>
-
-          <!-- Event report card: 주행 모드 → 주차 리포트 / 주차 모드 → 주행 리포트 -->
-          <section id="eventCard" class="tap rounded-2xl bg-ink px-[25px] py-[15px] flex flex-col gap-[9px] transition-opacity duration-200"></section>
-
-          <!-- AI quick nav -->
-          <section class="grid grid-cols-3">
-            <div class="tap flex flex-col items-center gap-[5px] py-[6px]">
-              <svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11.78" cy="11.78" r="8.16"/><path d="M18.13 18.13l7.25 7.25M8.16 14.5v-3.63M11.78 14.5V8.16M15.41 14.5V9.06"/></svg>
-              <div class="flex items-center gap-[3px]"><span class="text-[14px] font-bold text-ink">사고 분석</span><span class="px-[3px] rounded-[4px] bg-brand text-white text-[10px] font-black leading-[14px]">AI</span></div>
-              <span class="text-[11px] text-sub">사고 과실비율 분석</span>
-            </div>
-            <div class="tap flex flex-col items-center gap-[5px] py-[6px] border-l border-line">
-              <svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M25.37 5.44a7.25 7.25 0 0 1-9.06 9.06l-9.06 9.97a3.85 3.85 0 0 1-5.44-5.44l9.97-9.06a7.25 7.25 0 0 1 9.06-9.06l-4.53 4.53.91 4.53 4.53.91 3.62-5.44Z"/></svg>
-              <div class="flex items-center gap-[3px]"><span class="text-[14px] font-bold text-ink">수리 견적</span><span class="px-[3px] rounded-[4px] bg-brand text-white text-[10px] font-black leading-[14px]">AI</span></div>
-              <span class="text-[11px] text-sub">차량 수리 비 확인</span>
-            </div>
-            <div class="tap flex flex-col items-center gap-[5px] py-[6px] border-l border-line">
-              <svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 1.81l10.88 4.53v8.16c0 6.34-10.88 12.69-10.88 12.69S3.63 20.84 3.63 14.5V6.34L14.5 1.81Z"/><path d="M9.06 14.5l3.63 3.63 7.25-8.16"/></svg>
-              <span class="text-[14px] font-bold text-ink">위반 신고</span>
-              <span class="text-[11px] text-sub">교통위반 신고하기</span>
-            </div>
-          </section>
-
-          <!-- Chatbot input (tap → system keyboard) -->
-          <section id="chatInput" class="h-[52px] rounded-[40px] bg-white/95 border border-[#DCE1E7] shadow-[0_8px_24px_rgba(73,119,200,0.05)] flex items-center gap-[10px] pl-4 pr-[10px] cursor-text transition-colors">
-            <svg width="30" height="30" viewBox="0 0 40 40" fill="none" class="shrink-0"><path d="M25 15l-6.67-2.5L25 10l2.5-6.67L30 10l6.67 2.5L30 15l-2.5 6.67L25 15ZM11.67 28.33L3.33 25l8.34-3.33L15 13.33l3.33 8.34L26.67 25l-8.34 3.33L15 36.67l-3.33-8.34Z" fill="#5E6470"/></svg>
-            <div class="flex-1 min-w-0 text-[13px] leading-[18px] truncate">
-              <span id="chatPlaceholder" class="text-[#8B9BB7] text-[12px]">궁금한 내용을 입력하세요...</span><span id="chatText" class="text-ink"></span><span id="caret" class="caret hidden"></span>
-            </div>
-            <button id="sendBtn" class="w-9 h-9 rounded-full bg-white border-2 border-[#EA580C] flex items-center justify-center shrink-0" aria-label="보내기">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15.83V4.17M15 9.17l-5-5-5 5"/></svg>
-            </button>
-          </section>
-
-          <!-- 나의 안전운전 리포트 -->
-          <section class="flex flex-col gap-4 pt-[10px]">
-            <div class="flex items-center justify-between">
-              <h2 class="text-[19px] font-bold text-ink">나의 안전운전 리포트</h2>
-              <span class="text-[13px] font-bold text-ink underline underline-offset-2">주행·주차 리포트</span>
-            </div>
-            <div class="tap rounded-[14px] bg-peach px-5 py-[26px] flex items-center gap-3">
-              <div class="flex-1 flex flex-col gap-[6px]">
-                <span class="text-[11px] font-bold text-ink">전체 주행 종합 평가</span>
-                <span class="text-[18px] font-black text-ink">나의 누적 안전운전 점수</span>
-                <span class="text-[14px] text-sub">기록된 18번의 주행을 종합했어요.</span>
-                <span class="text-[13px] font-bold text-ink underline underline-offset-2">운전 습관 확인</span>
-              </div>
-              <div class="flex flex-col items-end">
-                <span class="text-[48px] font-black text-ink leading-[56px]">92</span>
-                <span class="text-[13px] font-medium text-ink">/100</span>
-              </div>
-            </div>
-            <div class="tap flex items-center gap-[18px] py-5 border-b border-line">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.42 2.75h6.41l3.67 3.67v12.83H6.42V2.75Z"/><path d="M12.83 2.75v3.67h3.67M9.17 11h4.58M9.17 14.67h4.58"/></svg>
-              <div class="flex-1 flex flex-col gap-1"><span class="text-[16px] font-bold text-ink">18번의 주행을 한눈에.</span><span class="text-[14px] text-sub">9월 · 총 428 km 주행</span></div>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 4.5 11.25 9l-4.5 4.5"/></svg>
-            </div>
-          </section>
-
-          <!-- Feature area -->
-          <section class="flex flex-col gap-5 pt-[18px]">
-
-            <!-- 가치봄 소개 -->
-            <div class="flex flex-col gap-[10px]">
-              <h2 class="text-[16px] font-bold text-ink">주변을 살피는 작은 관심, 가치봄</h2>
-              <div class="tap rounded-[14px] bg-white border border-line px-[23px] py-[14px] flex flex-col gap-2">
-                <span class="text-[11px] font-bold text-sub">도와줘요</span>
-                <span class="text-[21px] font-black text-ink">테헤란로 근처에 주차하셨나요?</span>
-                <span class="text-[16px] text-sub leading-[22px]">다른 운전자가 당시 상황이 담긴 영상을 찾고 있어요.</span>
-                <div class="flex items-center justify-between pt-[10px]">
-                  <span class="text-[14px] text-sub">9월 20일 · 14:00–15:00 KST</span>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 9h10.5M9.75 13.5 14.25 9l-4.5-4.5"/></svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- 내 차의 기록 -->
-            <div class="flex flex-col">
-              <h2 class="text-[18px] font-bold text-sec">내 차의 기록</h2>
-              <div id="recordList" class="flex flex-col"></div>
-            </div>
-
-            <!-- 기기 관리 -->
-            <div class="flex flex-col gap-3">
-              <h2 class="text-[18px] font-bold text-sec">기기 관리</h2>
-              <div id="deviceList" class="grid grid-cols-3 gap-[10px]"></div>
-            </div>
-          </section>
-        </main>
-      </div>
-
-      <!-- Tab bar (fixed) -->
-      <nav class="absolute bottom-0 inset-x-0 z-[50] px-3 pt-2 pb-5 pointer-events-none">
-        <div class="glass-edge h-[64px] rounded-full p-[1px] pointer-events-auto" style="--edge-stop:53%">
-          <div class="h-[62px] rounded-full bg-white/[0.92] flex items-center pr-[1px]">
-            <div class="glass-edge h-[62px] w-[70px] rounded-full flex items-center justify-center shrink-0" style="--edge-stop:100%">
-              <div class="w-[64px] h-[54px] rounded-full bg-[#E5E7EB]/80 flex flex-col items-center justify-center gap-[2px]">
-                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 3L4 9.33V21h5.5v-7.04h5V21H20V9.33L12 3Z" fill="#000"/></svg>
-                <span class="text-[10px] font-black text-ink">홈</span>
-              </div>
-            </div>
-            <div class="flex-1 flex flex-col items-center gap-[2px]">
-              <svg width="23" height="24" viewBox="0 0 23 24" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.25 4.5H5.75c-1.59 0-2.88 1.34-2.88 3v9c0 1.66 1.29 3 2.88 3h11.5c1.59 0 2.88-1.34 2.88-3v-9c0-1.66-1.29-3-2.88-3Z"/><path d="M9.58 9.2l4.8 2.8-4.8 2.8V9.2Z"/></svg>
-              <span class="text-[10px] font-medium text-sub">보관함</span>
-            </div>
-            <div class="flex-1 flex flex-col items-center gap-[2px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14c2.6.2 4.5 2.4 4.5 5"/></svg>
-              <span class="text-[10px] font-medium text-sub">가치봄</span>
-            </div>
-            <div class="flex-1 flex flex-col items-center gap-[2px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l1.6-4.4A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M6.5 17v2M17.5 17v2"/><circle cx="7.5" cy="14" r="0.8"/><circle cx="16.5" cy="14" r="0.8"/></svg>
-              <span class="text-[10px] font-medium text-sub">내 차 관리</span>
-            </div>
-            <div class="flex-1 flex flex-col items-center gap-[2px]">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#626B76" stroke="#626B76" stroke-width="1.5"><circle cx="4.67" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19.33" cy="12" r="1"/></svg>
-              <span class="text-[10px] font-medium text-sub">더보기</span>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <!-- Simulated system keyboard -->
-      <div id="keyboard" class="kb absolute bottom-0 inset-x-0 z-[80] pt-2 px-[3px] select-none" aria-hidden="true">
-        <div id="kbRows" class="flex flex-col gap-3"></div>
-        <div class="h-[66px] flex items-start justify-between px-6 pt-[14px]">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A3D42" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A3D42" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
-        </div>
-      </div>
-
-      <!-- Toast -->
-      <div id="toast" class="toast absolute left-1/2 bottom-[120px] z-[95] bg-ink/90 text-white text-[13px] px-4 py-[10px] rounded-full whitespace-nowrap"></div>
-
-      <!-- Home indicator -->
-      <div class="home-indicator-frame absolute bottom-[8px] left-1/2 -translate-x-1/2 w-[134px] h-[5px] rounded-full bg-black z-[100]"></div>
-    </div>
+<body>
+<div class="stage">
+ <div class="device">
+  <div id="screen" class="screen">
+   <div class="island"></div>
+   <div id="pages"></div>
+   <nav id="tabbar" class="tabbar"><div class="wrap"><div class="inner" id="tabInner"></div></div></nav>
+   <div id="kb" class="kb" aria-hidden="true"><div class="rows" id="kbRows"></div><div style="height:66px;display:flex;align-items:flex-start;justify-content:space-between;padding:14px 24px 0"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A3D42" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3A3D42" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></div></div>
+   <div id="layer"></div>
+   <div id="toast" class="toast"></div>
+   <div class="hindi"></div>
   </div>
+ </div>
 </div>
 
 <script>
-/* ---------------- 내 차의 기록 / 기기 관리 (mock data) ---------------- */
-const ICON = {
-  folder: '<svg width="22" height="23" viewBox="0 0 22 23" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.38C3 5.62 3.62 5 4.38 5H8.5l1.83 2.02h7.8c.76 0 1.37.61 1.37 1.37V16c0 .76-.61 1.38-1.37 1.38H4.38C3.62 17.38 3 16.76 3 16V6.38Z"/></svg>',
-  chart:  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#334259" stroke-width="1.875"><path d="M3 5V21H22M7 18V13M12 18V9M17 18V6"/></svg>',
-  car:    '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.58 10.08 6.05 6.05a1.9 1.9 0 0 1 1.74-1.19h6.42a1.9 1.9 0 0 1 1.74 1.19l1.47 4.03"/><rect x="2.75" y="10.08" width="16.5" height="5.5" rx="1.83"/><path d="M5.96 15.58v1.84M16.04 15.58v1.84"/><circle cx="6.87" cy="12.83" r=".73"/><circle cx="15.12" cy="12.83" r=".73"/></svg>',
-  pin:    '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#246142" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19.25s-5.96-5.13-5.96-10.08a5.96 5.96 0 0 1 11.92 0c0 4.95-5.96 10.08-5.96 10.08Z"/><circle cx="11" cy="9.17" r="2.02"/></svg>',
-  cam:    '<svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 20c-.55 0-1.03-.19-1.43-.58C2.19 19.03 2 18.55 2 18V6c0-.55.19-1.02.58-1.4C2.98 4.2 3.45 4 4 4h12c.55 0 1.02.2 1.4.6.4.38.6.85.6 1.4v4.5l4-4v11l-4-4V18c0 .55-.2 1.03-.6 1.43-.38.38-.85.57-1.4.57H4Zm0-2h12V6H4v12Z" fill="#111827"/></svg>',
-  gear:   '<svg width="21" height="22" viewBox="0 0 21 22"><path d="M7.9 21l-.38-3.2a6 6 0 0 1-1.11-.67l-2.81 1.25L1 13.63l2.43-1.96a4 4 0 0 1 0-1.35L1 8.38l2.6-4.75 2.81 1.25c.17-.13.35-.26.54-.38.19-.11.38-.21.57-.3L7.9 1h5.2l.38 3.2c.2.08.4.18.58.3.18.12.36.24.53.38l2.81-1.25L20 8.38l-2.43 1.95a4 4 0 0 1 0 1.35l2.41 1.95-2.6 4.75-2.79-1.25a6 6 0 0 1-1.11.67L13.1 21H7.9Zm2.65-6.5c.91 0 1.69-.34 2.34-1.03.64-.68.97-1.5.97-2.47s-.33-1.79-.97-2.47A3.1 3.1 0 0 0 10.55 7.5c-.93 0-1.72.34-2.36 1.03A3.5 3.5 0 0 0 7.24 11c0 .97.32 1.79.96 2.47.64.69 1.42 1.03 2.35 1.03Z" fill="#111827"/></svg>',
-  download: '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.67v10.08M15.58 9.62 11 13.75 6.42 9.62M4.58 18.33h12.84"/></svg>',
+/* =========================================================
+   FINE Alaseo 앱 프로토타입 (피그마 01_화면정의 기준)
+   - 탭 루트(홈/보관함/가치봄/내 차 관리/더보기): 하단 탭바 노출, 뒤로가기 없음
+   - 두 번째 뎁스부터: 탭바 숨김, 헤더 뒤로가기
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const ICON={
+ back:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#20262D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+ chev:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 4.5 11.25 9l-4.5 4.5"/></svg>',
+ bell:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 14.67V10.08a5.5 5.5 0 0 1 11 0v4.59l1.38 1.83H4.13l1.37-1.83Z"/><path d="M9.17 18.79a1.83 1.83 0 0 0 3.66 0"/></svg>',
+ car:(c='#20262D')=>`<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.58 10.08 6.05 6.05a1.9 1.9 0 0 1 1.74-1.19h6.42a1.9 1.9 0 0 1 1.74 1.19l1.47 4.03"/><rect x="2.75" y="10.08" width="16.5" height="5.5" rx="1.83"/><path d="M5.96 15.58v1.84M16.04 15.58v1.84"/><circle cx="6.87" cy="12.83" r=".73"/><circle cx="15.12" cy="12.83" r=".73"/></svg>`,
+ folder:'<svg width="22" height="23" viewBox="0 0 22 23" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.38C3 5.62 3.62 5 4.38 5H8.5l1.83 2.02h7.8c.76 0 1.37.61 1.37 1.37V16c0 .76-.61 1.38-1.37 1.38H4.38C3.62 17.38 3 16.76 3 16V6.38Z"/></svg>',
+ chart:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#334259" stroke-width="1.875"><path d="M3 5V21H22M7 18V13M12 18V9M17 18V6"/></svg>',
+ pin:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#246142" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19.25s-5.96-5.13-5.96-10.08a5.96 5.96 0 0 1 11.92 0c0 4.95-5.96 10.08-5.96 10.08Z"/><circle cx="11" cy="9.17" r="2.02"/></svg>',
+ doc:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.42 2.75h6.41l3.67 3.67v12.83H6.42V2.75Z"/><path d="M12.83 2.75v3.67h3.67M9.17 11h4.58M9.17 14.67h4.58"/></svg>',
+ cam:'<svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 20c-.55 0-1.03-.19-1.43-.58C2.19 19.03 2 18.55 2 18V6c0-.55.19-1.02.58-1.4C2.98 4.2 3.45 4 4 4h12c.55 0 1.02.2 1.4.6.4.38.6.85.6 1.4v4.5l4-4v11l-4-4V18c0 .55-.2 1.03-.6 1.43-.38.38-.85.57-1.4.57H4Zm0-2h12V6H4v12Z" fill="#111827"/></svg>',
+ gear:'<svg width="21" height="22" viewBox="0 0 21 22"><path d="M7.9 21l-.38-3.2a6 6 0 0 1-1.11-.67l-2.81 1.25L1 13.63l2.43-1.96a4 4 0 0 1 0-1.35L1 8.38l2.6-4.75 2.81 1.25c.17-.13.35-.26.54-.38.19-.11.38-.21.57-.3L7.9 1h5.2l.38 3.2c.2.08.4.18.58.3.18.12.36.24.53.38l2.81-1.25L20 8.38l-2.43 1.95a4 4 0 0 1 0 1.35l2.41 1.95-2.6 4.75-2.79-1.25a6 6 0 0 1-1.11.67L13.1 21H7.9Zm2.65-6.5c.91 0 1.69-.34 2.34-1.03.64-.68.97-1.5.97-2.47s-.33-1.79-.97-2.47A3.1 3.1 0 0 0 10.55 7.5c-.93 0-1.72.34-2.36 1.03A3.5 3.5 0 0 0 7.24 11c0 .97.32 1.79.96 2.47.64.69 1.42 1.03 2.35 1.03Z" fill="#111827"/></svg>',
+ dl:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.67v10.08M15.58 9.62 11 13.75 6.42 9.62M4.58 18.33h12.84"/></svg>',
+ spark:(c='#EA580C',s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 40 40"><path d="M25 15l-6.67-2.5L25 10l2.5-6.67L30 10l6.67 2.5L30 15l-2.5 6.67L25 15ZM11.67 28.33L3.33 25l8.34-3.33L15 13.33l3.33 8.34L26.67 25l-8.34 3.33L15 36.67l-3.33-8.34Z" fill="${c}"/></svg>`,
+ shield:(c='#EA580C',s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 29 29" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 1.81l10.88 4.53v8.16c0 6.34-10.88 12.69-10.88 12.69S3.63 20.84 3.63 14.5V6.34L14.5 1.81Z"/><path d="M9.06 14.5l3.63 3.63 7.25-8.16"/></svg>`,
+ copy:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4D5C70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+ trash:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#626B76" stroke-width="1.7"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',
+ info:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#20262D" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+ plus:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>',
+ x:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 3l10 10M13 3 3 13"/></svg>',
+ fuel:'<svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#6B7684" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.67 18.33V5.04A1.38 1.38 0 0 1 5.04 3.67h6.88a1.38 1.38 0 0 1 1.37 1.37v13.29M2.75 18.33h11.46"/><path d="M5.96 7.33h5.04v3.21H5.96z"/><path d="M13.29 9.17h1.37a1.38 1.38 0 0 1 1.38 1.37v3.67a1.15 1.15 0 0 0 2.29 0V7.79L16.04 5.5"/></svg>',
+ wrench:'<svg width="22" height="22" viewBox="0 0 29 29" fill="none" stroke="#6B7684" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M25.37 5.44a7.25 7.25 0 0 1-9.06 9.06l-9.06 9.97a3.85 3.85 0 0 1-5.44-5.44l9.97-9.06a7.25 7.25 0 0 1 9.06-9.06l-4.53 4.53.91 4.53 4.53.91 3.62-5.44Z"/></svg>',
+ people:(c='#E0480B')=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14c2.6.2 4.5 2.4 4.5 5"/></svg>`,
+ P:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D92D20" stroke-width="1.9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="M9.5 17V7.5h3.5a3 3 0 0 1 0 6H9.5"/></svg>',
+ route:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A73D9" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M8 6h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7"/></svg>',
 };
-const CHEV = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#626B76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 4.5 11.25 9l-4.5 4.5"/></svg>';
-
-const RECORDS = [
-  { icon: 'folder', title: '블랙박스 영상',   sub: '블랙박스 녹화 영상 확인' },
-  { icon: 'chart',  title: '주행/주차 리포트', sub: '주행과 주차 기록 확인' },
-  { icon: 'car',    title: '주정차 위험안내',  sub: '현 위치 주정차 단속 정보 안내' },
-  { icon: 'pin',    title: '내가 가본 곳',     sub: '기록된 방문 장소 확인' },
+const TABS=[
+ {id:'home',label:'홈',icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3L4 9.33V21h5.5v-7.04h5V21H20V9.33L12 3Z"/></svg>'},
+ {id:'vault',label:'보관함',icon:'<svg width="23" height="24" viewBox="0 0 23 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.25 4.5H5.75c-1.59 0-2.88 1.34-2.88 3v9c0 1.66 1.29 3 2.88 3h11.5c1.59 0 2.88-1.34 2.88-3v-9c0-1.66-1.29-3-2.88-3Z"/><path d="M9.58 9.2l4.8 2.8-4.8 2.8V9.2Z"/></svg>'},
+ {id:'gb',label:'가치봄',icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14c2.6.2 4.5 2.4 4.5 5"/></svg>'},
+ {id:'mycar',label:'내 차 관리',icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l1.6-4.4A2 2 0 0 1 8.5 5.3h7a2 2 0 0 1 1.9 1.3L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M6.5 17v2M17.5 17v2"/></svg>'},
+ {id:'more',label:'더보기',icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="#626B76" stroke-width="1.2"><circle cx="4.7" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19.3" cy="12" r="1.5"/></svg>'},
 ];
-document.getElementById('recordList').innerHTML = RECORDS.map(r => `
-  <div class="tap flex items-center gap-[18px] py-5 border-b border-line">
-    <span class="w-6 flex justify-center shrink-0">${ICON[r.icon]}</span>
-    <div class="flex-1 flex flex-col gap-1">
-      <span class="text-[16px] font-bold text-ink">${r.title}</span>
-      <span class="text-[14px] text-sub">${r.sub}</span>
-    </div>
-    ${CHEV}
-  </div>`).join('');
 
-const DEVICES = [
-  { icon: 'cam',      title: '라이브뷰' },
-  { icon: 'gear',     title: '블랙박스 설정' },
-  { icon: 'download', title: '업데이트' },
-];
-document.getElementById('deviceList').innerHTML = DEVICES.map(d => `
-  <div class="tap h-[85px] rounded-[12px] bg-white border border-[#D4DBE8] flex flex-col items-center justify-center gap-[10px] px-1">
-    <span class="h-6 flex items-center justify-center">${ICON[d.icon]}</span>
-    <span class="text-[12px] font-bold text-ink">${d.title}</span>
-  </div>`).join('');
-
-/* ---------------- 주행/주차 모드 전환 (프로토타입 전용) ---------------- */
-const ARROW = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#EA580C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.33 8h9.34M8.67 12l4-4-4-4"/></svg>';
-const BADGE = n => `<span class="absolute w-7 h-7 rounded-full bg-brand text-white text-[16px] font-black flex items-center justify-center" style="left:70px;top:-4px">${n}</span>`;
-const ILLUST = {
-  parking: `
-    <svg width="100" height="96" viewBox="0 0 100 96" fill="none" class="absolute inset-0">
-      <rect x="22" y="12" width="64" height="74" rx="6" stroke="#8A939E" stroke-width="1.5" stroke-dasharray="4 4"/>
-      <rect x="34" y="22" width="40" height="52" rx="9" fill="#D8DDE3"/>
-      <rect x="38" y="30" width="32" height="14" rx="3" fill="#20262D"/>
-      <rect x="38" y="58" width="32" height="5" rx="2" fill="#8A939E"/>
-      <circle cx="41" cy="68" r="2.5" fill="#E96E0A"/><circle cx="67" cy="68" r="2.5" fill="#E96E0A"/>
-    </svg>
-    <span class="absolute left-[6px] top-0 text-[18px] font-bold text-white leading-[22px]">P</span>`,
-  driving: `
-    <svg width="90" height="74" viewBox="0 0 90 74" fill="none" class="absolute" style="left:8px;top:2px">
-      <path fill-rule="evenodd" d="M55.56 16h-2.66v15.33h13.41a.33.33 0 0 0 .31-.45l-3.92-10.01A7.67 7.67 0 0 0 55.56 16ZM27.02 31.33h23V16h-9.48a7.67 7.67 0 0 0-6.46 3.54L26.8 30.93a.26.26 0 0 0 .22.4Z" fill="#fff"/>
-      <path fill-rule="evenodd" d="M73.5 38.04a6.71 6.71 0 0 0-6.71-6.71H27.5C21.15 31.33 16 36.48 16 42.83v1.92a3.83 3.83 0 0 0 3.83 3.83h.92a7.77 7.77 0 0 1 15.42 0h17.16a7.77 7.77 0 0 1 15.42 0h.91a3.83 3.83 0 0 0 3.84-3.83v-6.71Z" fill="#D8DDE3"/>
-      <path d="M64.41 42.54a7.75 7.75 0 1 0-6.74 14 7.75 7.75 0 0 0 6.74-14Zm-32.58 0a7.75 7.75 0 1 0-6.74 14 7.75 7.75 0 0 0 6.74-14Z" fill="#828282"/>
-    </svg>`,
+/* ---------------- State (mock) ---------------- */
+const st={
+ mode:'driving', mycarSetup:true,
+ vault:[{d:'2026.07.03',items:[['긴급 녹화','19h14m20s'],['주행 일반','18h52m10s'],['주차 모션','12h03m44s'],['주차 충격','08h21m05s']]},{d:'2026.07.02',items:[['긴급 녹화','23h10m02s'],['주행 일반','08h41m35s'],['주차 충격','07h12m00s']]}],
+ noti:[
+  {d:'2026.10.27',items:[{k:'report',ic:'route',t:'주행 리포트가 도착했어요',b:'최근 주행: 대림동 → 야탑동 · 1시간 5분 · 운전점수 95점',tm:'07:58',n:1,go:'drive'},{k:'report',ic:'route',t:'주차 리포트가 도착했어요',b:'최근 주차: 야탑동 · 12시간 48분',tm:'07:58',n:1,go:'park'},{k:'car',ic:'P',t:'주정차 단속구역에 주차했어요',b:'성남시 분당구 판교역로 235 · 단속 정보를 확인해 주세요.',tm:'19:58',go:'parking'}]},
+  {d:'2026.10.26',items:[{k:'ai',ic:'spark',t:'AI 사고 분석이 완료됐어요',b:'요청한 사고 분석 결과를 확인해 보세요.',tm:'08:30',go:'accList'},{k:'ai',ic:'spark',t:'AI 수리 견적이 나왔어요',b:'예상 수리비를 확인해 보세요.',tm:'08:30',go:'repList'}]},
+  {d:'2026.10.21',items:[{k:'gb',ic:'people',t:'내 주변에 영상 요청이 있어요',b:'테헤란로 근처, 10월 26일 14:00–15:00 상황이 담긴 영상을 찾고 있어요.',tm:'08:47',go:'gbDetail'},{k:'gb',ic:'people',t:'내 요청에 제보가 도착했어요',b:'“탑마을 주차장 문콕”에 새로운 제보가 있어요.',tm:'08:47',go:'gbMine'},{k:'gb',ic:'people',t:'도와줘요 게시가 곧 종료돼요',b:"'탑마을 주차장 문콕'의 게시기한을 연장할까요?",tm:'08:47',go:'gbMine'}]},
+  {d:'2026.10.25',items:[{k:'dev',ic:'dl',t:'새 펌웨어 업데이트가 있어요',b:'X600 AI 1.0.002 버전을 설치할 수 있어요.',tm:'21:14',go:'fw'}]},
+  {d:'2026.10.18',items:[{k:'car',ic:'wrench',t:'엔진오일 교체 시기가 다가와요',b:'다음 교체까지 약 1,200km 남았어요.',tm:'10:20',go:'consum'},{k:'car',ic:'fuel',t:'주유하셨나요?',b:'GS-OIL에 방문 기록이 있어요. 주유 내역을 남겨보세요.',tm:'10:20',go:'#fuel'}]},
+ ],
+ acc:[{d:'2026.06.01 | 13:05',t:'도신로 31',s:'req'},{d:'2026.05.15 | 00:45',t:'도신로 31',s:'ing'},{d:'2026.05.05 | 17:25',t:'막계동 124',s:'done',a:'다운로드'},{d:'2026.01.01 | 02:22',t:'정동진리 64-3',s:'done',a:'보기'}],
+ rep:[{d:'2026.06.01 | 13:05',t:'롤스로이스 팬텀, 연식 -',s:'ing'},{d:'2026.05.09 | 10:27',t:'G90, 2025',s:'done',a:'보기'},{d:'2026.06.01 | 13:05',t:'스파크, 2020',s:'done',a:'다운로드'}],
+ vio:[{d:'2026.06.01 | 13:05',t:'교통위반(고속도로 포함)',type:'교통위반(고속도로 포함)',time:'2026.06.01 13:05',place:'경기도 성남시 분당구 판교역로 235',body:'흰색 쏘나타(12가 3456) 차량이 실선 구간에서 방향지시등 없이 진로를 변경해 사고가 날 뻔했습니다.'},
+      {d:'2026.05.15 | 00:45',t:'끼어들기 금지 위반',type:'끼어들기 금지 위반',time:'2026.05.15 00:45',place:'서울시 영등포구 여의대로 24',body:'정체 구간에서 검은색 SUV(34나 5678)가 실선을 넘어 끼어들었습니다.'},
+      {d:'2026.05.05 | 17:25',t:'과속/난폭 운전',type:'과속/난폭 운전',time:'2026.05.05 17:25',place:'경부고속도로 판교IC 부근',body:'회색 세단이 차로를 반복 변경하며 난폭 운전했습니다.'}],
+ device:{name:'내차 블박',model:'X600 AI',car:'SONATA_DN8',registered:true},
 };
-const MODES = {
-  // 차량이 '주행 중'일 때 → 주차 중 있었던 일(주차 리포트)
-  driving: { status: '주행 중', badge: 'badge-driving', label: '주차 중 있었던 일', title: '주차 이벤트<br/>2건이 있어요.', count: 2, cta: '주차 영상 확인', illust: 'parking', h: 95 },
-  // 차량이 '주차 중'일 때 → 주행 중 있었던 일(주행 리포트)
-  parking: { status: '주차 중', badge: 'badge-parking', label: '주행 중 있었던 일', title: '주행 이벤트<br/>1건이 있어요.', count: 1, cta: '주행 영상 확인', illust: 'driving', h: 87 },
-};
-let vehicleMode = 'driving';
-const eventCard = document.getElementById('eventCard');
-const modeBtn = document.getElementById('modeBtn');
-const modeBadge = document.getElementById('modeBadge');
-function renderMode() {
-  const m = MODES[vehicleMode];
-  modeBadge.textContent = m.status;
-  modeBadge.className = modeBadge.className.replace(/badge-\w+/, m.badge);
-  eventCard.innerHTML = `
-    <p class="text-[12px] font-bold text-white">${m.label}</p>
-    <div class="flex items-center gap-3">
-      <div class="flex-1 flex flex-col gap-[10px]">
-        <p class="text-[22px] font-bold text-white leading-[30px]">${m.title}</p>
-        <p class="text-[12px] text-[#D8DDE3]">남겨진 영상을 확인해 보세요.</p>
-      </div>
-      <div class="relative w-[100px] shrink-0" style="height:${m.h}px">${ILLUST[m.illust]}${BADGE(m.count)}</div>
-    </div>
-    <div class="flex items-center justify-between">
-      <span class="text-[15px] font-bold text-white">${m.cta}</span>
-      <span class="w-[30px] h-[30px] rounded-full bg-white flex items-center justify-center">${ARROW}</span>
-    </div>`;
-}
-modeBtn.addEventListener('click', () => {
-  eventCard.style.opacity = '0';
-  setTimeout(() => {
-    vehicleMode = vehicleMode === 'driving' ? 'parking' : 'driving';
-    renderMode();
-    eventCard.style.opacity = '1';
-  }, 160);
-});
-renderMode();
 
-/* ---------------- Hangul (2-beolsik) composer ---------------- */
-const CHO  = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
-const JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
-const JONG = ['', 'ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-const JUNG_MIX = { 'ㅗㅏ':'ㅘ','ㅗㅐ':'ㅙ','ㅗㅣ':'ㅚ','ㅜㅓ':'ㅝ','ㅜㅔ':'ㅞ','ㅜㅣ':'ㅟ','ㅡㅣ':'ㅢ' };
-const JONG_MIX = { 'ㄱㅅ':'ㄳ','ㄴㅈ':'ㄵ','ㄴㅎ':'ㄶ','ㄹㄱ':'ㄺ','ㄹㅁ':'ㄻ','ㄹㅂ':'ㄼ','ㄹㅅ':'ㄽ','ㄹㅌ':'ㄾ','ㄹㅍ':'ㄿ','ㄹㅎ':'ㅀ','ㅂㅅ':'ㅄ' };
-const split = (map, v) => { for (const k in map) if (map[k] === v) return [k[0], k[1]]; return null; };
-const isVowel = c => JUNG.includes(c);
+/* ---------------- Router ---------------- */
+const S={}; let stack=[{id:'home'}];
+function cur(){return stack[stack.length-1]}
+function go(id,p){closeAll();stack.push({id,p:p||{}});render('push')}
+function back(){closeAll();if(stack.length>1){const c=cur(),d=S[c.id];if(d&&d.guard&&d.guard()===false)return;stack.pop();render('pop')}}
+function tab(id){closeAll();if(id==='mycar'&&!st.mycarSetup){stack=[{id:'mycarSetup',p:{fromTab:true,prev:stack.slice()}}];render('fade');return}stack=[{id}];render('fade')}
+function render(dir){const c=cur(),d=S[c.id];const el=document.createElement('div');el.className='page '+(d.cls||'')+' '+(dir==='push'?'enter':dir==='pop'?'enter-back':'fade');
+ el.innerHTML=d.render(c.p||{});const host=$('#pages');host.innerHTML='';host.appendChild(el);
+ const tb=$('#tabbar');if(d.tab){tb.classList.add('show');drawTabs(d.tab)}else tb.classList.remove('show');
+ if(d.mount)d.mount(el,c.p||{});}
+function drawTabs(on){$('#tabInner').innerHTML=TABS.map(t=>`<div class="t ${t.id===on?'on':''}" data-tab="${t.id}">${t.icon}<span>${t.label}</span></div>`).join('')}
+const hdr=(title,o={})=>`<div class="hdr ${o.big?'big':''}">${o.noBack?'':`<button class="backb" data-back aria-label="뒤로가기">${ICON.back}</button>`}<div class="title">${title}</div>${o.right||''}</div>`;
 
-let committed = '';
-let cur = { cho: '', jung: '', jong: '' };
+/* ---------------- Overlays ---------------- */
+function closeAll(){$('#layer').innerHTML='';closeKb(true)}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1700)}
+function modal({title,q,body,cancel='취소',ok='확인',okCls='mb-ok',onOk,onCancel,single}){
+ $('#layer').innerHTML=`<div class="dim" data-dim><div class="modal" onclick="event.stopPropagation()">${title?`<h3>${title}</h3>`:''}${q?`<div class="q">${q}</div>`:''}${body?`<div class="b">${body}</div>`:''}<div class="btns">${single?'':`<button class="mb-cancel" id="mCancel">${cancel}</button>`}<button class="${okCls}" id="mOk">${ok}</button></div></div></div>`;
+ $('#mOk').onclick=()=>{$('#layer').innerHTML='';onOk&&onOk()};const c=$('#mCancel');if(c)c.onclick=()=>{$('#layer').innerHTML='';onCancel&&onCancel()};
+ $('[data-dim]').onclick=()=>{$('#layer').innerHTML='';onCancel&&onCancel()};}
+function sheet(html,onMount){$('#layer').innerHTML=`<div class="dim sheet" data-dim><div class="sheetbox" onclick="event.stopPropagation()"><div class="grab"></div>${html}</div></div>`;$('[data-dim]').onclick=()=>{$('#layer').innerHTML=''};onMount&&onMount($('#layer'))}
 
-function render(s) {
-  if (s.cho && s.jung) return String.fromCharCode(0xAC00 + (CHO.indexOf(s.cho) * 21 + JUNG.indexOf(s.jung)) * 28 + JONG.indexOf(s.jong));
-  return s.cho || s.jung || '';
-}
-function commit() { committed += render(cur); cur = { cho: '', jung: '', jong: '' }; }
+/* ---------------- Global click delegation ---------------- */
+document.addEventListener('click',e=>{
+ const t=e.target.closest('[data-tab],[data-back],[data-go],[data-toast]');if(!t)return;
+ if(t.dataset.tab!==undefined){tab(t.dataset.tab);return}
+ if(t.dataset.back!==undefined){back();return}
+ if(t.dataset.go){let p={};try{p=t.dataset.p?JSON.parse(t.dataset.p):{}}catch(_){}
+  if(t.dataset.go==='#fuel'){fuelPopup();return}go(t.dataset.go,p);return}
+ if(t.dataset.toast){toast(t.dataset.toast)}});
+const gp=(o)=>`data-p='${JSON.stringify(o).replace(/'/g,'&#39;')}'`;
 
-function inputJamo(c) {
-  if (!isVowel(c)) {                         // consonant
-    if (cur.cho && cur.jung && !cur.jong && JONG.includes(c)) { cur.jong = c; return; }
-    if (cur.jong && JONG_MIX[cur.jong + c]) { cur.jong = JONG_MIX[cur.jong + c]; return; }
-    commit(); cur.cho = c; return;
-  }
-  if (cur.jong) {                            // 받침을 다음 글자 초성으로 이동
-    const pair = split(JONG_MIX, cur.jong);
-    let next;
-    if (pair) { cur.jong = pair[0]; next = pair[1]; } else { next = cur.jong; cur.jong = ''; }
-    commit(); cur = { cho: next, jung: c, jong: '' }; return;
-  }
-  if (cur.jung) {
-    if (JUNG_MIX[cur.jung + c]) { cur.jung = JUNG_MIX[cur.jung + c]; return; }
-    commit(); cur.jung = c; return;
-  }
-  if (cur.cho) { cur.jung = c; return; }
-  cur.jung = c;
-}
-function backspace() {
-  if (cur.jong) { const p = split(JONG_MIX, cur.jong); cur.jong = p ? p[0] : ''; return; }
-  if (cur.jung) { const p = split(JUNG_MIX, cur.jung); cur.jung = p ? p[0] : ''; return; }
-  if (cur.cho)  { cur.cho = ''; return; }
-  committed = committed.slice(0, -1);
-}
-function insertRaw(ch) { commit(); committed += ch; }
-const value = () => committed + render(cur);
+/* =========================================================
+   01 홈 (탭 루트)
+   ========================================================= */
+const MODES={driving:{status:'주행 중',badge:'badge-driving',label:'주차 중 있었던 일',title:'주차 이벤트<br/>2건이 있어요.',count:2,cta:'주차 영상 확인',go:'park'},
+ parking:{status:'주차 중',badge:'badge-parking',label:'주행 중 있었던 일',title:'주행 이벤트<br/>1건이 있어요.',count:1,cta:'주행 영상 확인',go:'drive'}};
+const ILL={driving:`<svg width="100" height="96" viewBox="0 0 100 96" fill="none" style="position:absolute;inset:0"><rect x="22" y="12" width="64" height="74" rx="6" stroke="#8A939E" stroke-width="1.5" stroke-dasharray="4 4"/><rect x="34" y="22" width="40" height="52" rx="9" fill="#D8DDE3"/><rect x="38" y="30" width="32" height="14" rx="3" fill="#20262D"/><rect x="38" y="58" width="32" height="5" rx="2" fill="#8A939E"/><circle cx="41" cy="68" r="2.5" fill="#E96E0A"/><circle cx="67" cy="68" r="2.5" fill="#E96E0A"/></svg><span style="position:absolute;left:6px;top:0;font-size:18px;font-weight:700;color:#fff">P</span>`,
+ parking:`<svg width="90" height="74" viewBox="0 0 90 74" fill="none" style="position:absolute;left:8px;top:2px"><path fill-rule="evenodd" d="M55.56 16h-2.66v15.33h13.41a.33.33 0 0 0 .31-.45l-3.92-10.01A7.67 7.67 0 0 0 55.56 16ZM27.02 31.33h23V16h-9.48a7.67 7.67 0 0 0-6.46 3.54L26.8 30.93a.26.26 0 0 0 .22.4Z" fill="#fff"/><path fill-rule="evenodd" d="M73.5 38.04a6.71 6.71 0 0 0-6.71-6.71H27.5C21.15 31.33 16 36.48 16 42.83v1.92a3.83 3.83 0 0 0 3.83 3.83h.92a7.77 7.77 0 0 1 15.42 0h17.16a7.77 7.77 0 0 1 15.42 0h.91a3.83 3.83 0 0 0 3.84-3.83v-6.71Z" fill="#D8DDE3"/><path d="M64.41 42.54a7.75 7.75 0 1 0-6.74 14 7.75 7.75 0 0 0 6.74-14Zm-32.58 0a7.75 7.75 0 1 0-6.74 14 7.75 7.75 0 0 0 6.74-14Z" fill="#828282"/></svg>`};
+function evcardHTML(){const m=MODES[st.mode];return `<p style="font-size:12px;font-weight:700;color:#fff">${m.label}</p>
+ <div class="row"><div style="flex:1;display:flex;flex-direction:column;gap:10px"><p style="font-size:22px;font-weight:700;color:#fff;line-height:30px">${m.title}</p><p style="font-size:12px;color:#D8DDE3">남겨진 영상을 확인해 보세요.</p></div>
+ <div style="position:relative;width:100px;height:${st.mode==='driving'?95:87}px;flex-shrink:0">${ILL[st.mode]}<span style="position:absolute;left:70px;top:-4px;width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center">${m.count}</span></div></div>
+ <div class="row" style="justify-content:space-between"><span style="font-size:15px;font-weight:700;color:#fff">${m.cta}</span><span style="width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#EA580C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.33 8h9.34M8.67 12l4-4-4-4"/></svg></span></div>`}
+S.home={tab:'home',render:()=>`
+ <div class="body tabpad noscroll" id="homeBody">
+  <header class="h-head"><h1 class="h-logo">FINE Alaseo</h1><button class="bell" data-go="noti" aria-label="알림">${ICON.bell}${unread()?'<i></i>':''}</button></header>
+  <main class="h-main">
+   <section class="row" style="justify-content:space-between;height:22px"><div class="row" style="gap:8px">${ICON.car('#626B76')}<span style="font-size:14px;font-weight:700">나의 쏘나타</span></div>
+    <button id="modeBtn" style="padding:10px 0 10px 12px;margin:-10px 0" aria-label="주행/주차 전환(프로토타입)"><span id="modeBadge" class="sbadge ${MODES[st.mode].badge}">${MODES[st.mode].status}</span></button></section>
+   <p style="font-size:26px;font-weight:900;line-height:40px">오늘도 안전하게.<br/>내 차의 기록을 한눈에.</p>
+   <section class="evcard tap" id="evCard">${evcardHTML()}</section>
+   <section class="qnav">
+    <div class="tap" data-go="accList"><svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round"><circle cx="11.78" cy="11.78" r="8.16"/><path d="M18.13 18.13l7.25 7.25M8.16 14.5v-3.63M11.78 14.5V8.16M15.41 14.5V9.06"/></svg><div class="row" style="gap:3px"><b style="font-size:14px">사고 분석</b><span class="ai">AI</span></div><span class="small muted" style="font-size:11px">사고 과실비율 분석</span></div>
+    <div class="tap" data-go="repList"><svg width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M25.37 5.44a7.25 7.25 0 0 1-9.06 9.06l-9.06 9.97a3.85 3.85 0 0 1-5.44-5.44l9.97-9.06a7.25 7.25 0 0 1 9.06-9.06l-4.53 4.53.91 4.53 4.53.91 3.62-5.44Z"/></svg><div class="row" style="gap:3px"><b style="font-size:14px">수리 견적</b><span class="ai">AI</span></div><span class="small muted" style="font-size:11px">차량 수리 비 확인</span></div>
+    <div class="tap" data-go="vioList">${ICON.shield('#20262D',29)}<b style="font-size:14px">위반 신고</b><span class="small muted" style="font-size:11px">교통위반 신고하기</span></div>
+   </section>
+   <section class="chat" id="chatInput">${ICON.spark('#5E6470',30)}<div style="flex:1;min-width:0;font-size:13px;line-height:18px;white-space:nowrap;overflow:hidden"><span id="chatPh" style="color:#8B9BB7;font-size:12px">궁금한 내용을 입력하세요...</span><span id="chatTx"></span><span id="caret" class="caret hidden"></span></div>
+    <button id="sendBtn" style="width:36px;height:36px;border-radius:50%;border:2px solid #EA580C;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-label="보내기"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15.83V4.17M15 9.17l-5-5-5 5"/></svg></button></section>
+   <section style="display:flex;flex-direction:column;gap:16px;padding-top:10px">
+    <div class="row" style="justify-content:space-between"><h2 style="font-size:19px;font-weight:700">나의 안전운전 리포트</h2><span data-go="reports" style="font-size:13px;font-weight:700;text-decoration:underline;cursor:pointer">주행·주차 리포트</span></div>
+    <div class="score tap" data-go="score"><div style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;font-weight:700">전체 주행 종합 평가</span><span style="font-size:18px;font-weight:900">나의 누적 안전운전 점수</span><span style="font-size:14px;color:var(--sub)">기록된 18번의 주행을 종합했어요.</span><span style="font-size:13px;font-weight:700;text-decoration:underline">운전 습관 확인</span></div><div style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:48px;font-weight:900;line-height:56px">92</span><span style="font-size:13px;font-weight:500">/100</span></div></div>
+    <div class="f-row" data-go="reports"><span class="ic">${ICON.doc}</span><div style="flex:1;display:flex;flex-direction:column;gap:4px"><b style="font-size:16px">18번의 주행을 한눈에.</b><span style="font-size:14px;color:var(--sub)">9월 · 총 428 km 주행</span></div>${ICON.chev}</div>
+   </section>
+   <section style="display:flex;flex-direction:column;gap:20px;padding-top:18px">
+    <div style="display:flex;flex-direction:column;gap:10px"><h2 style="font-size:16px;font-weight:700">주변을 살피는 작은 관심, 가치봄</h2>
+     <div class="tap card" data-go="gbDetail" style="border:1px solid var(--line);border-radius:14px;padding:14px 23px;display:flex;flex-direction:column;gap:8px"><span style="font-size:11px;font-weight:700;color:var(--sub)">도와줘요</span><span style="font-size:21px;font-weight:900">테헤란로 근처에 주차하셨나요?</span><span style="font-size:16px;color:var(--sub);line-height:22px">다른 운전자가 당시 상황이 담긴 영상을 찾고 있어요.</span><div class="row" style="justify-content:space-between;padding-top:10px"><span style="font-size:14px;color:var(--sub)">9월 20일 · 14:00–15:00 KST</span><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#20262D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 9h10.5M9.75 13.5 14.25 9l-4.5-4.5"/></svg></div></div></div>
+    <div><h2 class="sec-title">내 차의 기록</h2>
+     ${[['folder','블랙박스 영상','블랙박스 녹화 영상 확인','bbvideo'],['chart','주행/주차 리포트','주행과 주차 기록 확인','reports'],['car','주정차 위험안내','현 위치 주정차 단속 정보 안내','parking'],['pin','내가 가본 곳','기록된 방문 장소 확인','visited']].map(r=>`<div class="f-row" data-go="${r[3]}"><span class="ic">${r[0]==='car'?ICON.car():ICON[r[0]]}</span><div style="flex:1;display:flex;flex-direction:column;gap:4px"><b style="font-size:16px">${r[1]}</b><span style="font-size:14px;color:var(--sub)">${r[2]}</span></div>${ICON.chev}</div>`).join('')}</div>
+    <div style="display:flex;flex-direction:column;gap:12px"><h2 class="sec-title">기기 관리</h2><div class="devgrid"><div class="tap" data-go="live">${ICON.cam}<span>라이브뷰</span></div><div class="tap" data-go="bbset">${ICON.gear}<span>블랙박스 설정</span></div><div class="tap" data-go="fw">${ICON.dl}<span>업데이트</span></div></div></div>
+   </section>
+  </main>
+ </div>`,
+ mount(el){
+  el.querySelector('#modeBtn').onclick=e=>{e.stopPropagation();const c=el.querySelector('#evCard');c.style.opacity=0;setTimeout(()=>{st.mode=st.mode==='driving'?'parking':'driving';c.innerHTML=evcardHTML();const b=el.querySelector('#modeBadge');b.textContent=MODES[st.mode].status;b.className='sbadge '+MODES[st.mode].badge;c.style.opacity=1},160)};
+  el.querySelector('#evCard').onclick=()=>go(MODES[st.mode].go);
+  const chat=el.querySelector('#chatInput');chat.onclick=e=>{if(e.target.closest('#sendBtn')){submitChat();return}openKb(el)};
+  el.querySelector('#homeBody').addEventListener('click',e=>{if(kbOpen&&!e.target.closest('#chatInput'))closeKb()});
+ }};
 
-/* ---------------- Keyboard layouts ---------------- */
-const LAYOUT = {
-  ko:  [['ㅂ','ㅈ','ㄷ','ㄱ','ㅅ','ㅛ','ㅕ','ㅑ','ㅐ','ㅔ'], ['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'], ['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']],
-  koS: [['ㅃ','ㅉ','ㄸ','ㄲ','ㅆ','ㅛ','ㅕ','ㅑ','ㅒ','ㅖ'], ['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'], ['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']],
-  num: [['1','2','3','4','5','6','7','8','9','0'], ['-','/',':',';','(',')','₩','&','@','"'], ['.',',','?','!',"'"]],
-};
-let mode = 'ko', shift = false;
+/* ---------- Hangul keyboard (chat) ---------- */
+const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ',JUNG='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ',JONG=['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const JM={'ㅗㅏ':'ㅘ','ㅗㅐ':'ㅙ','ㅗㅣ':'ㅚ','ㅜㅓ':'ㅝ','ㅜㅔ':'ㅞ','ㅜㅣ':'ㅟ','ㅡㅣ':'ㅢ'},KM={'ㄱㅅ':'ㄳ','ㄴㅈ':'ㄵ','ㄴㅎ':'ㄶ','ㄹㄱ':'ㄺ','ㄹㅁ':'ㄻ','ㄹㅂ':'ㄼ','ㄹㅅ':'ㄽ','ㄹㅌ':'ㄾ','ㄹㅍ':'ㄿ','ㄹㅎ':'ㅀ','ㅂㅅ':'ㅄ'};
+const spl=(m,v)=>{for(const k in m)if(m[k]===v)return[k[0],k[1]];return null};
+let committed='',cu={cho:'',jung:'',jong:''},kbMode='ko',shift=false,kbOpen=false,kbPage=null;
+const rnd=s=>s.cho&&s.jung?String.fromCharCode(0xAC00+(CHO.indexOf(s.cho)*21+JUNG.indexOf(s.jung))*28+JONG.indexOf(s.jong)):(s.cho||s.jung||'');
+const commit=()=>{committed+=rnd(cu);cu={cho:'',jung:'',jong:''}};const val=()=>committed+rnd(cu);
+function jamo(c){if(!JUNG.includes(c)){if(cu.cho&&cu.jung&&!cu.jong&&JONG.includes(c)){cu.jong=c;return}if(cu.jong&&KM[cu.jong+c]){cu.jong=KM[cu.jong+c];return}commit();cu.cho=c;return}
+ if(cu.jong){const p=spl(KM,cu.jong);let n;if(p){cu.jong=p[0];n=p[1]}else{n=cu.jong;cu.jong=''}commit();cu={cho:n,jung:c,jong:''};return}
+ if(cu.jung){if(JM[cu.jung+c]){cu.jung=JM[cu.jung+c];return}commit();cu.jung=c;return}cu.jung=c}
+function bs(){if(cu.jong){const p=spl(KM,cu.jong);cu.jong=p?p[0]:'';return}if(cu.jung){const p=spl(JM,cu.jung);cu.jung=p?p[0]:'';return}if(cu.cho){cu.cho='';return}committed=committed.slice(0,-1)}
+const LAY={ko:[['ㅂ','ㅈ','ㄷ','ㄱ','ㅅ','ㅛ','ㅕ','ㅑ','ㅐ','ㅔ'],['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'],['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']],koS:[['ㅃ','ㅉ','ㄸ','ㄲ','ㅆ','ㅛ','ㅕ','ㅑ','ㅒ','ㅖ'],['ㅁ','ㄴ','ㅇ','ㄹ','ㅎ','ㅗ','ㅓ','ㅏ','ㅣ'],['ㅋ','ㅌ','ㅊ','ㅍ','ㅠ','ㅜ','ㅡ']],num:[['1','2','3','4','5','6','7','8','9','0'],['-','/',':',';','(',')','₩','&','@','"'],['.',',','?','!',"'"]]};
+function buildKb(){const r=kbMode==='num'?LAY.num:(shift?LAY.koS:LAY.ko);const k=(l,c,d,s='')=>`<div class="key ${c}" data-k="${d}" style="${s}">${l}</div>`;const row=(a,p=0)=>`<div style="display:flex;gap:6px;padding:0 ${p}px">${a.map(c=>k(c,'',c,'flex:1')).join('')}</div>`;
+ const sh=`<svg width="20" height="20" viewBox="0 0 24 24" fill="${shift?'#111':'none'}" stroke="#111" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 3 12h5v8h8v-8h5z"/></svg>`,bk='<svg width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round"><path d="M8 2h15a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 23 18H8l-6.5-8L8 2Z"/><path d="m12 7 6 6m0-6-6 6"/></svg>';
+ $('#kbRows').innerHTML=row(r[0])+row(r[1],kbMode==='num'?0:18)+`<div style="display:flex;gap:6px">${k(kbMode==='num'?'#+=':sh,'fn',kbMode==='num'?'noop':'shift','width:44px')}<div style="display:flex;gap:6px;flex:1;padding:0 6px">${r[2].map(c=>k(c,'',c,'flex:1')).join('')}</div>${k(bk,'fn','bs','width:44px')}</div>`+`<div style="display:flex;gap:6px">${k(kbMode==='num'?'한글':'123','fn','mode','width:92px')}${k('간격','','space','flex:1;font-size:15px')}${k('보내기','ret'+(val()?'':' off'),'ret','width:92px')}</div>`}
+function refreshChat(){if(!kbPage)return;const v=val();kbPage.querySelector('#chatTx').textContent=v;kbPage.querySelector('#chatPh').style.display=v?'none':'';const r=$('#kb [data-k="ret"]');if(r)r.classList.toggle('off',!v)}
+function openKb(page){if(kbOpen)return;kbOpen=true;kbPage=page;buildKb();$('#kb').classList.add('open');page.querySelector('#caret').classList.remove('hidden');const chat=page.querySelector('#chatInput');chat.style.borderColor='#E96E0A';
+ const body=page.querySelector('#homeBody');const kh=$('#kb').offsetHeight;body.style.paddingBottom=(kh+24)+'px';requestAnimationFrame(()=>{const top=chat.getBoundingClientRect().top-body.getBoundingClientRect().top+body.scrollTop;body.scrollTo({top:Math.max(0,top-(body.clientHeight-kh-chat.offsetHeight-16)),behavior:'smooth'})})}
+function closeKb(silent){if(!kbOpen)return;kbOpen=false;commit();refreshChat();$('#kb').classList.remove('open');if(kbPage&&document.body.contains(kbPage)){kbPage.querySelector('#caret').classList.add('hidden');kbPage.querySelector('#chatInput').style.borderColor='';const b=kbPage.querySelector('#homeBody');setTimeout(()=>{if(!kbOpen)b.style.paddingBottom=''},280)}}
+function submitChat(){if(!val()){openKb(kbPage||document.querySelector('.page'));return}toast("'알아서'에게 질문을 보냈어요 (데모)");committed='';cu={cho:'',jung:'',jong:''};refreshChat();closeKb()}
+$('#kb').addEventListener('pointerdown',e=>{const el=e.target.closest('.key');if(!el)return;e.preventDefault();el.classList.add('pressed');setTimeout(()=>el.classList.remove('pressed'),90);const k=el.dataset.k;
+ if(k==='shift'){shift=!shift;buildKb();return}if(k==='mode'){kbMode=kbMode==='num'?'ko':'num';shift=false;buildKb();return}if(k==='noop')return;
+ if(k==='bs')bs();else if(k==='space'){commit();committed+=' '}else if(k==='ret'){submitChat();return}else if(kbMode==='num'){commit();committed+=k}else{jamo(k);if(shift){shift=false;buildKb()}}refreshChat()});
 
-function buildKeyboard() {
-  const rows = mode === 'num' ? LAYOUT.num : (shift ? LAYOUT.koS : LAYOUT.ko);
-  const k = (label, cls, data, style = '') => `<div class="key ${cls}" data-k="${data}" style="${style}">${label}</div>`;
-  const row = (keys, pad = 0) => `<div class="flex gap-[6px]" style="padding:0 ${pad}px">${keys.map(c => k(c, '', c, 'flex:1')).join('')}</div>`;
-  const shiftIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="${shift ? '#111' : 'none'}" stroke="#111" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3 3 12h5v8h8v-8h5z"/></svg>`;
-  const bsIcon = '<svg width="24" height="20" viewBox="0 0 26 20" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round"><path d="M8 2h15a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 23 18H8l-6.5-8L8 2Z"/><path d="m12 7 6 6m0-6-6 6"/></svg>';
-  const hasText = value().length > 0;
-  document.getElementById('kbRows').innerHTML =
-    row(rows[0]) +
-    row(rows[1], mode === 'num' ? 0 : 18) +
-    `<div class="flex gap-[6px]">
-       ${k(mode === 'num' ? '#+=' : shiftIcon, 'fn', mode === 'num' ? 'noop' : 'shift', 'width:44px')}
-       <div class="flex gap-[6px] flex-1" style="padding:0 6px">${rows[2].map(c => k(c, '', c, 'flex:1')).join('')}</div>
-       ${k(bsIcon, 'fn', 'bs', 'width:44px')}
-     </div>` +
-    `<div class="flex gap-[6px]">
-       ${k(mode === 'num' ? '한글' : '123', 'fn', 'mode', 'width:92px')}
-       ${k('간격', '', 'space', 'flex:1;font-size:15px')}
-       ${k('보내기', 'return' + (hasText ? '' : ' dim'), 'return', 'width:92px')}
-     </div>`;
-}
+/* =========================================================
+   19 알림
+   ========================================================= */
+const NCAT=[['all','전체'],['ai','AI 분석'],['car','내 차'],['report','리포트'],['gb','가치봄'],['dev','기기']];
+const unread=()=>st.noti.some(g=>g.items.some(i=>i.n));
+S.noti={cls:'white',render:p=>{const f=p.f||'all';const groups=st.noti.map(g=>({d:g.d,items:g.items.filter(i=>f==='all'||i.k===f)})).filter(g=>g.items.length);
+ return hdr('알림',{right:`<span class="rt" data-go="settings" style="cursor:pointer">알림 설정</span>`})+`<div class="chips">${NCAT.map(c=>`<span class="chip ${c[0]===f?'on':''}" data-f="${c[0]}">${c[1]}</span>`).join('')}</div>
+ <div class="body" style="background:var(--bg2)">${groups.length?groups.map(g=>`<div style="padding:16px 16px 8px;font-size:13px;font-weight:700;color:var(--sub)">${g.d}</div><div style="margin:0 16px;background:#fff;border-radius:14px;overflow:hidden">${g.items.map(i=>`<div class="list-row" data-ni="${st.noti.indexOf(st.noti.find(x=>x.items.includes(i)))}:${st.noti.find(x=>x.items.includes(i)).items.indexOf(i)}" style="align-items:flex-start"><span style="width:40px;height:40px;border-radius:12px;background:#F2F4F6;display:flex;align-items:center;justify-content:center;flex-shrink:0">${typeof ICON[i.ic]==='function'?ICON[i.ic](i.ic==='spark'?'#7A45D6':undefined):ICON[i.ic]}</span><div style="flex:1;min-width:0"><div class="row" style="gap:6px"><b style="font-size:15px">${i.t}</b>${i.n?'<span style="width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center">N</span>':''}</div><p style="font-size:13px;color:var(--sub);line-height:18px;margin-top:3px">${i.b}</p></div><span style="font-size:12px;color:var(--sub2);flex-shrink:0">${i.tm}</span></div>`).join('')}</div>`).join(''):'<div class="empty">받은 알림이 없어요.</div>'}<div style="height:30px"></div></div>`},
+ mount(el,p){el.querySelectorAll('[data-f]').forEach(c=>c.onclick=()=>{cur().p={f:c.dataset.f};render('fade')});
+  el.querySelectorAll('[data-ni]').forEach(r=>r.onclick=()=>{const [g,i]=r.dataset.ni.split(':').map(Number);const it=st.noti[g].items[i];it.n=0;if(it.go==='#fuel'){fuelPopup();r.querySelector('span[style*="N"]')&&render('fade');return}go(it.go)})}};
+function fuelPopup(){modal({title:'주유하셨나요?',q:'GS-OIL 성수점 방문 기록이 있어요.',body:'주유 내역을 남기면 연비와 유지비를 함께 관리할 수 있어요.',cancel:'다음에',ok:'기록하기',onOk:()=>go('records')})}
 
-/* ---------------- Chat input + keyboard behaviour ---------------- */
-const screenEl = document.getElementById('screen');
-const scroller = document.getElementById('scroller');
-const chat = document.getElementById('chatInput');
-const kb = document.getElementById('keyboard');
-const textEl = document.getElementById('chatText');
-const phEl = document.getElementById('chatPlaceholder');
-const caret = document.getElementById('caret');
-let kbOpen = false;
+/* =========================================================
+   02 블랙박스 영상 · 13 보관함 · 13-1 플레이어 · 14 라이브뷰
+   ========================================================= */
+S.bbvideo={render:()=>hdr('블랙박스 영상')+`<div class="chips">${['전체','지도','기록','유형'].map((c,i)=>`<span class="chip ${i===0?'on':''}" data-toast="'${c}' 보기는 프로토타입에서 '전체'만 제공해요">${c}</span>`).join('')}</div>
+ <div class="body"><div style="margin:4px 16px 0;padding:16px;border-radius:14px;background:#fff"><div class="row" style="justify-content:space-between;margin-bottom:12px"><b style="font-size:15px">AI 큐레이션 ${ICON.spark('#7A45D6',14)}</b><span class="small muted">전체보기</span></div>
+ <div class="row noscroll" style="overflow-x:auto;gap:8px">${[['사고 의심 · 전방','00:10'],['사고 의심 · 후방','00:10'],['긴급 녹화','00:30']].map(v=>`<div style="flex-shrink:0;width:132px" data-go="player" ${gp({t:v[0]})}><div class="vthumb" style="width:132px;height:84px;border-radius:10px"><b>${v[1]}</b></div><div style="font-size:12.5px;font-weight:700;margin-top:6px">${v[0]}</div></div>`).join('')}</div></div>
+ ${[['2026.09.07',[['주행충격','21h58m00s'],['주차충격','07h01m00s']]],['2026.09.06',[['긴급 녹화','18h42m00s'],['주행일반','19h05m00s']]]].map(g=>`<div style="padding:16px 16px 6px;font-size:13px;font-weight:700">${g[0]}</div>${g[1].map(v=>`<div class="row tap" style="padding:7px 16px" data-go="player" ${gp({t:v[0]})}><div class="vthumb"><b>Front</b></div><div style="flex:1"><div class="small muted">${v[0]}</div><b style="font-size:19px">${v[1]}</b></div><span class="btn-sm" data-toast="보관함에 저장했어요 (데모)" onclick="event.stopPropagation()">저장</span></div>`).join('')}`).join('')}<div style="height:30px"></div></div>`};
+S.vault={tab:'vault',render:()=>hdr('영상 보관함',{noBack:true})+`<div class="body tabpad">${st.vault.length?st.vault.map((g,gi)=>`<div style="padding:16px 16px 6px;font-size:13px;font-weight:700">${g.d}</div>${g.items.map((v,vi)=>`<div class="row tap" style="padding:7px 16px" data-go="player" ${gp({t:v[0]})}><div class="vthumb"><b>Front</b></div><div style="flex:1"><div class="small muted">${v[0]}</div><b style="font-size:19px">${v[1]}</b></div><button data-del="${gi}:${vi}" aria-label="삭제" style="padding:8px">${ICON.trash}</button></div>`).join('')}`).join(''):'<div class="empty">보관함에 저장한 영상이 없어요.</div>'}</div>`,
+ mount(el){el.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();const [g,v]=b.dataset.del.split(':').map(Number);
+  modal({title:'영상 삭제',q:'선택한 영상을 삭제하시겠습니까?',body:'<div style="text-align:center">삭제한 영상은 복구할 수 없습니다.</div>',ok:'삭제',okCls:'mb-danger',onOk:()=>{st.vault[g].items.splice(v,1);if(!st.vault[g].items.length)st.vault.splice(g,1);render('fade');toast('삭제되었습니다.')}})})}};
+S.player={cls:'white',render:p=>hdr('보관함 영상')+`<div class="body"><div style="background:#000;height:211px;position:relative;display:flex;align-items:center;justify-content:center" class="vthumb2"><div class="vthumb" style="position:absolute;inset:0;width:auto;height:auto;border-radius:0"></div><span style="position:relative;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-size:20px" data-toast="재생 (데모)">▶</span><span style="position:absolute;left:10px;top:10px;color:#fff;font-size:11px">FINE Alaseo · FRONT</span><span data-go="fullscreen" style="position:absolute;right:10px;bottom:10px;color:#fff;font-size:12px;cursor:pointer">전체화면</span></div>
+ <div style="padding:14px 16px;font-size:13px;color:var(--sub)">09.07 07:01 · 성남시 야탑동 · 전방 · ${p.t||'긴급 녹화'}</div>
+ <div class="chips" style="padding-top:0">${['지도','속도/충격량','정보'].map((c,i)=>`<span class="chip ${i===0?'on':''}" data-pt="${i}">${c}</span>`).join('')}</div>
+ <div id="ptab" style="margin:8px 16px;height:240px;border-radius:14px;background:#EEF1E8;position:relative;overflow:hidden">${mapSVG()}<span class="mpin" style="left:40%;top:55%">내 차</span></div>
+ <div class="row" style="gap:8px;padding:12px 16px 30px"><button class="btn btn-sub" data-toast="공유 시트 열기 (데모)">공유하기</button><button class="btn btn-primary" data-go="accWrite">${ICON.spark('#fff',16)}&nbsp;AI 영상 분석</button></div></div>`,
+ mount(el){el.querySelectorAll('[data-pt]').forEach(c=>c.onclick=()=>{el.querySelectorAll('[data-pt]').forEach(x=>x.classList.remove('on'));c.classList.add('on');const i=+c.dataset.pt;el.querySelector('#ptab').innerHTML=i===0?mapSVG()+'<span class="mpin" style="left:40%;top:55%">내 차</span>':i===1?`<div style="padding:16px"><b>속도 · 충격량</b><svg viewBox="0 0 300 150" style="width:100%;height:170px;margin-top:8px"><polyline fill="none" stroke="#3B6FF5" stroke-width="2.5" points="0,120 30,100 60,90 90,95 120,60 150,70 180,40 210,50 240,30 270,45 300,35"/><polyline fill="none" stroke="#E5484D" stroke-width="2" points="0,140 120,140 130,80 140,140 300,140"/></svg></div>`:`<div style="padding:16px;line-height:30px;font-size:14px">녹화 유형 · 긴급 녹화<br>촬영 일시 · 2026.09.07 07:01<br>위치 · 성남시 야탑동<br>파일 크기 · 48.2MB</div>`})}};
+S.fullscreen={cls:'',render:()=>`<div style="position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center"><div style="transform:rotate(90deg);width:760px;height:340px;position:relative"><div class="vthumb" style="position:absolute;inset:0;width:auto;height:auto;border-radius:0"></div><button data-back style="position:absolute;left:16px;top:16px;color:#fff;font-size:14px;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:999px">← 전체화면 종료</button></div></div>`};
+S.live={render:()=>`<div style="position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center"><div style="transform:rotate(90deg);width:780px;height:350px;position:relative"><div class="vthumb" style="position:absolute;inset:0;width:auto;height:auto;border-radius:0"></div>
+ <button data-back style="position:absolute;left:16px;top:16px;color:#fff;font-size:14px;background:rgba(0,0,0,.45);padding:6px 12px;border-radius:999px">← 라이브뷰 종료</button><span style="position:absolute;left:50%;top:16px;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:700;background:#E5484D;padding:4px 10px;border-radius:6px">LIVE · <span id="liveCam">전방</span></span>
+ <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px">${['전/후방','사진','영상'].map(b=>`<button data-live="${b}" style="width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:11px">${b}</button>`).join('')}</div></div></div>`,
+ mount(el){el.querySelectorAll('[data-live]').forEach(b=>b.onclick=()=>{if(b.dataset.live==='전/후방'){const c=el.querySelector('#liveCam');c.textContent=c.textContent==='전방'?'후방':'전방'}else toast(b.dataset.live+' 촬영 (데모)')})}};
 
-function refreshInput() {
-  const v = value();
-  textEl.textContent = v;
-  phEl.style.display = v ? 'none' : '';
-  const ret = kb.querySelector('[data-k="return"]');
-  if (ret) ret.classList.toggle('dim', !v);
-}
-function openKeyboard() {
-  if (kbOpen) return;
-  kbOpen = true;
-  buildKeyboard();
-  kb.classList.add('open');
-  caret.classList.remove('hidden');
-  chat.style.borderColor = '#E96E0A';
-  const kbH = kb.offsetHeight;
-  scroller.style.paddingBottom = (kbH + 24) + 'px';
-  // iOS처럼 입력창이 키보드 바로 위에 보이도록 스크롤
-  requestAnimationFrame(() => {
-    const chatTop = chat.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-    const target = chatTop - (screenEl.clientHeight - kbH - chat.offsetHeight - 16);
-    scroller.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-  });
-}
-function closeKeyboard() {
-  if (!kbOpen) return;
-  kbOpen = false;
-  commit(); refreshInput();
-  kb.classList.remove('open');
-  caret.classList.add('hidden');
-  chat.style.borderColor = '';
-  setTimeout(() => { if (!kbOpen) scroller.style.paddingBottom = ''; }, 280);
-}
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1600);
-}
-function submit() {
-  if (!value()) return;
-  toast('알아서에게 질문을 보냈어요 (데모)');
-  committed = ''; cur = { cho: '', jung: '', jong: '' };
-  refreshInput(); closeKeyboard();
-}
+/* =========================================================
+   03 리포트 · 08 운전점수 · 04 주정차 · 07 내가 가본 곳
+   ========================================================= */
+S.reports={cls:'white',render:p=>{const f=p.f||'all';const rows=[['10월 7일','drive','07:20 - 08:25','대림동 → 야탑동','확인필요 1건','95점'],['10월 6일','park','19:54 - 07:20','영등포구 야탑동','확인필요 2건',''],['','drive','18:40 - 19:54','야탑동 → 대림동','','95점'],['','park','08:30 - 18:40','분당구 야탑동','',''],['','drive','07:25 - 08:30','대림동 → 야탑동','확인필요 1건','95점']].filter(r=>f==='all'||r[1]===f);
+ return hdr('주행·주차 리포트')+`<div class="chips">${[['all','전체'],['drive','주행'],['park','주차']].map(c=>`<span class="chip ${c[0]===f?'on':''}" data-f="${c[0]}">${c[1]}</span>`).join('')}</div><div class="row" style="justify-content:center;gap:16px;padding:8px 0;font-weight:700">‹ <span>2026년 10월</span> ›</div>
+ <div class="body">${rows.map(r=>`${r[0]?`<div style="padding:14px 16px 4px;font-size:13px;font-weight:700;color:var(--sub)">${r[0]}</div>`:''}<div class="list-row" data-go="${r[1]==='drive'?'drive':'park'}"><span style="width:40px;height:40px;border-radius:12px;background:${r[1]==='drive'?'#EAF0FF':'#F1F2F5'};display:flex;align-items:center;justify-content:center;flex-shrink:0">${r[1]==='drive'?ICON.route:ICON.car('#626B76')}</span><div style="flex:1"><div class="small muted">${r[2]}</div><b style="font-size:15px">${r[3]}</b>${r[4]?`<div><span class="pill p-warn" style="margin-top:6px">${r[4]}</span></div>`:''}</div>${r[5]?`<b style="color:var(--green)">${r[5]}</b>`:''}${ICON.chev}</div>`).join('')}</div>`},
+ mount(el){el.querySelectorAll('[data-f]').forEach(c=>c.onclick=()=>{cur().p={f:c.dataset.f};render('fade')})}};
+const timeline=(arr)=>arr.map((t,i)=>`<div class="row" style="align-items:flex-start;gap:14px;padding:10px 0"><span style="width:44px;font-size:13px;font-weight:700">${t[0]}</span><span style="width:10px;height:10px;border-radius:50%;margin-top:5px;background:${t[2]?'#E5484D':'#C9CED6'}"></span><div style="flex:1"><b style="font-size:14px">${t[1]}</b>${t[3]?`<div class="small muted">${t[3]}</div>`:''}</div>${t[2]?`<span class="btn-sm" data-go="player" ${gp({t:'충격 영상'})}>영상보기</span>`:''}</div>`).join('');
+S.drive={cls:'white',render:()=>hdr('주행 리포트')+`<div class="body pad"><div class="small muted">2026.09.07 · 오전 07:20 – 08:07</div><div class="row" style="gap:10px;margin:14px 0">${[['주행 거리','27 km'],['주행 시간','47 분']].map(x=>`<div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px"><div class="small muted">${x[0]}</div><b style="font-size:20px">${x[1]}</b></div>`).join('')}</div>
+ <div style="background:var(--redbg);color:#B42318;border-radius:12px;padding:14px;font-size:14px;font-weight:700;line-height:20px">주행 중 충격이 감지됐어요.<br>영상을 확인해 주세요.</div>
+ <div style="margin-top:20px;background:var(--peach);border-radius:14px;padding:18px" data-go="score" class="tap"><div class="small">이번 주행 점수</div><div class="row" style="justify-content:space-between"><b style="font-size:17px">매우 안전한 운전</b><b style="font-size:34px">97점</b></div><div class="row" style="justify-content:space-between;margin-top:10px;font-size:13px">${[['급제동','0회'],['급가속','2회'],['급회전','0회'],['과속','6 km']].map(x=>`<span>${x[0]} <b>${x[1]}</b></span>`).join('')}</div></div>
+ <h3 style="font-size:16px;margin:22px 0 6px">주행 타임라인</h3>${timeline([['07:20','주행 시작',0,'경기 성남시 성남대로 123'],['07:35','중간 충격 감지',1],['08:07','주행 종료',0,'서울시 영등포구 여의로 12']])}</div>`};
+S.park={cls:'white',render:()=>hdr('주차 리포트')+`<div class="body pad"><div class="small muted">2026.09.06 – 09.07</div><div style="margin-top:14px;background:var(--redbg);color:#B42318;border-radius:12px;padding:14px;font-size:14px;font-weight:700;line-height:20px">주차 중 충격이 2건 감지됐어요.<br>차량 상태를 꼭 확인해 주세요.</div>
+ <div class="row" style="gap:10px;margin:14px 0">${[['주차 시간','9시간 10분'],['감지된 충격','2회']].map(x=>`<div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px"><div class="small muted">${x[0]}</div><b style="font-size:20px">${x[1]}</b></div>`).join('')}</div>
+ <div style="background:var(--bg2);border-radius:12px;padding:14px"><div class="small muted">주차 위치</div><b style="font-size:14px">📍 경기도 성남시 성남대로 123</b></div>
+ <h3 style="font-size:16px;margin:22px 0 6px">주차 타임라인</h3>${timeline([['21:55','주차 시작',0,'차량 시동 꺼짐'],['21:57','중간 충격 감지',1],['07:01','중간 충격 감지',1],['07:05','주차 종료',0,'차량 시동 켜짐']])}</div>`};
+S.score={cls:'white',render:()=>hdr('운전점수',{right:`<span class="rt" data-toast="운전점수 기준 안내 (08-1)">기준</span>`})+`<div class="body pad"><div class="small muted">2026.09.07 오전 08:30 기준 업데이트</div>
+ <div style="margin-top:14px;background:var(--peach);border-radius:16px;padding:20px"><div class="small">총 운전점수 · 최근 6개월</div><b style="font-size:48px">94</b><span>점</span><div class="row" style="justify-content:space-between;margin-top:10px;font-size:13px"><span>최근 6개월 주행 1,228.2 km</span><span>누적 18,321 km</span></div></div>
+ <h3 style="font-size:16px;margin:22px 0 10px">월간 운전점수</h3><div class="row" style="align-items:flex-end;gap:10px;height:120px">${[['5월',90],['6월',91],['7월',92],['8월',93],['9월',94]].map((m,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="small ${i===4?'bold':''}">${m[1]}</span><div style="width:100%;height:${(m[1]-80)*6}px;border-radius:8px;background:${i===4?'var(--orange)':'#E3E7ED'}"></div><span class="small muted">${m[0]}</span></div>`).join('')}</div>
+ <h3 style="font-size:16px;margin:24px 0 10px">9월 운전점수에 영향을 준 습관</h3><p class="small muted" style="margin-bottom:10px">과속 비중이 가장 높았어요. 줄이면 점수가 올라가요.</p>${[['과속',42],['급감속',33],['급가속',25]].map(h=>`<div class="row" style="margin:8px 0"><span style="width:50px;font-size:13px">${h[0]}</span><div style="flex:1;height:8px;border-radius:9px;background:#EEF0F3"><div style="width:${h[1]}%;height:100%;border-radius:9px;background:var(--orange)"></div></div><b style="width:40px;text-align:right;font-size:13px">${h[1]}%</b></div>`).join('')}
+ <button class="btn btn-sub" style="margin-top:20px" data-go="reports">9월 운행 기록 보기</button><div style="height:20px"></div></div>`};
+S.parking={cls:'white',render:p=>{const none=p.none;return hdr('주정차 위험 안내')+`<div class="row" style="padding:0 16px;gap:22px;border-bottom:1px solid var(--line2)"><span style="padding:10px 0;font-weight:700;border-bottom:3px solid var(--orange)">내 주차 위치</span><span style="padding:10px 0;color:var(--sub2)" data-toast="단속 알림 탭(04-1)은 프로토타입 범위 밖이에요">단속 알림</span></div>
+ <div class="body" style="background:var(--bg2);padding:16px"><div class="card row" style="padding:14px 16px"><span style="width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-weight:700">차</span><b style="flex:1">현대 아반떼 · OO가 1234</b><span class="pill p-req">주차중</span></div>
+ <div style="margin:16px 0 8px"><div class="small muted">현재 위치</div><b style="font-size:16px">경기도 성남시 분당구 판교역로 235</b><div class="small muted">마지막 업데이트 1분 전</div></div>
+ <div style="height:180px;border-radius:14px;position:relative;overflow:hidden" data-toast="04-2 현재위치 지도 (데모)">${mapSVG()}<span class="mpin" style="left:50%;top:65%">내 차 · 현재 위치</span>${none?'':`<span style="position:absolute;left:22%;top:40%;width:30px;height:30px;border-radius:50%;background:#111;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">📹</span><span style="position:absolute;left:78%;top:24%;width:30px;height:30px;border-radius:50%;background:#111;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">📹</span>`}</div>
+ <h3 style="font-size:16px;margin:20px 0 10px">단속 구역 정보</h3><div style="background:${none?'#fff':'#FFF1EC'};border-radius:16px;padding:20px"><div class="row" style="justify-content:space-between"><b style="font-size:16px">${none?'주정차 단속 정보가 없습니다.':'주정차 단속 정보가 있습니다.'}</b>${none?'':'<span class="pill" style="background:#E5262D;color:#fff">단속구역</span>'}</div>
+ <div style="margin:14px 0;font-size:14px;line-height:26px"><div class="row" style="justify-content:space-between"><span>• 주정차 단속 구역</span><span>${none?0:'N'} 건</span></div><div class="row" style="justify-content:space-between"><span>• 주정차 단속 CCTV</span><span>${none?0:'N'} 건</span></div></div>
+ <p class="small muted" style="line-height:18px">ⓘ 공공데이터 기준으로 실제와 다를 수 있습니다.<br>&nbsp;&nbsp;&nbsp;현장 안내를 우선 확인해 주세요.</p><button class="btn btn-primary" style="margin-top:14px" data-toast="지자체 단속 알림 등록 페이지로 이동 (데모)">단속 알림 신청</button></div>
+ <p style="text-align:center;margin:12px 0" class="small"><span style="text-decoration:underline;cursor:pointer;color:var(--sub)" data-go="parking" ${gp({none:!none})}>[프로토타입] ${none?'단속 구역 상태 보기':'단속 정보 없음(RiskCard_Nothing) 보기'}</span></p>
+ <h3 style="font-size:16px;margin:16px 0 4px">주변 대체 주차장</h3><p class="small muted" style="margin-bottom:8px">실시간 주차 가능 정보는 준비 중입니다.</p><div class="card">${[['코리아디자인센터 주차장','도보 3분 · 92면'],['분당차병원 주차장','도보 6분 · 지하 1~3층'],['탄천종합운동장 주차장','도보 9분 · 공영']].map(r=>`<div class="list-row" data-toast="04-3 주차장 정보 (데모)"><span style="width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center">P</span><div style="flex:1"><b style="font-size:15px">${r[0]}</b><div class="small muted">${r[1]}</div></div>${ICON.chev}</div>`).join('')}</div><p class="small muted" style="margin:10px 0 30px">* 실제 제휴 주차장 정보는 추후 업데이트됩니다.</p></div>`}};
+S.visited={cls:'white',render:()=>hdr('내가 가본 곳')+`<div class="body pad"><div class="small muted">나의 누적 방문 기록</div><h2 style="font-size:22px;font-weight:900;line-height:32px;margin:6px 0">가본 곳이 쌓일수록,<br>나의 지도가 넓어져요.</h2>
+ <div style="margin:16px 0;border-radius:16px;background:var(--bg2);padding:18px;text-align:center"><svg viewBox="0 0 120 160" width="160" height="210"><path d="M55 8l20 6 10 18-4 20 12 16-6 22 8 18-10 22-22 10-18-6-12 8-12-14 4-20-10-14 8-18-6-20 14-16 6-20z" fill="#DDE3EA"/><path d="M70 40l12 12-6 14-14-4zM40 70l14 4 2 14-14 6-8-12zM62 108l12 6-2 12-14-4z" fill="#EA580C"/><path d="M78 80l10 6-4 10-10-4z" fill="#F7A66B"/></svg><div><b>7개 도시를 다녀왔어요</b></div><div class="small muted">누적 방문 286회</div></div>
+ <button class="btn btn-primary" data-toast="내 지도 JPG 공유 미리보기 (07-1)">내 지도 JPG 공유</button><h3 style="font-size:16px;margin:22px 0 8px">어느새 단골이 된 곳 TOP 5</h3>${[['서울 영등포구',38],['성남시 분당구',31],['속초시',6],['부산 해운대구',4],['경주시',3]].map((r,i)=>`<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line2)"><b style="width:20px;color:var(--orange)">${i+1}</b><span style="flex:1">${r[0]}</span><b>${r[1]}회</b></div>`).join('')}<div style="height:20px"></div></div>`};
 
-chat.addEventListener('click', e => {
-  if (e.target.closest('#sendBtn')) { submit(); return; }
-  openKeyboard();
-});
-// 입력창 밖(화면 콘텐츠·탭바)을 탭하면 키보드 닫힘
-document.getElementById('screen').addEventListener('click', e => {
-  if (kbOpen && !e.target.closest('#chatInput') && !e.target.closest('#keyboard')) closeKeyboard();
-});
+/* =========================================================
+   15/16/17 위반신고 · 사고분석 · 수리견적
+   ========================================================= */
+const SP={req:['분석 요청','p-req'],ing:['분석 중','p-ing'],done:['분석 완료','p-done']};
+const histFooter=(note,goW)=>`<div style="padding:20px 0 0;background:var(--bg2)"><p class="note">${note}</p><div style="padding:0 16px 28px"><button class="btn btn-primary" data-go="${goW}">접수하기</button></div></div>`;
+function histPage(o){return {cls:'gray',render:()=>hdr(o.title+(o.ai?' '+ICON.spark('#111',18):''),{right:`<button data-help aria-label="도움말">${ICON.info}</button>`})+`<div class="body" style="display:flex;flex-direction:column"><div style="background:#fff;padding:12px 0">${`<div class="intro" style="margin:0 16px"><span class="ic">${o.icon}</span><div><b>${o.introT}</b><p>${o.introB}</p></div></div>`}</div>
+ <div style="background:#fff;border-top:1px solid var(--line2)">${st[o.key].length?st[o.key].map((r,i)=>`<div class="list-row" ${o.detail?`data-go="${o.detail}" ${gp({i})}`:''}><span class="thumb"></span><div style="flex:1;min-width:0"><div class="small muted">${r.d}</div><b style="font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.t}</b>${r.s?`<span class="pill ${SP[r.s][1]}" style="margin-top:6px">${SP[r.s][0]}</span>`:''}</div>${r.a?`<span class="btn-sm" data-toast="${r.a==='보기'?'분석 결과 리포트 보기 (데모)':'리포트를 기기에 저장했어요 · 파일 앱에서 확인'}" onclick="event.stopPropagation()">${r.a}</span>`:''}</div>`).join(''):`<div class="empty">${o.empty}</div>`}</div>
+ <div style="flex:1;background:var(--bg2)"></div>${histFooter(o.note,o.write)}</div>`,
+ mount(el){el.querySelector('[data-help]').onclick=()=>o.help()}}}
+function writePage(o){return {cls:'gray',render:p=>{const pre=p.i!==undefined?st.vio[p.i]:null;return hdr(o.title+(o.ai?' '+ICON.spark('#111',18):''),{right:`<button data-help aria-label="도움말">${ICON.info}</button>`})+`<div class="body" style="padding:20px 16px"><h2 style="font-size:22px;font-weight:900;line-height:32px;white-space:pre-line">${o.head}</h2><p class="small muted" style="margin:6px 0 24px;line-height:18px;white-space:pre-line">${o.sub}</p>
+ ${o.fields.map(f=>f==='type'?`<div class="field"><label>교통위반 유형</label><input class="input" data-in placeholder="신고 유형을 선택해 주세요." value="${pre?pre.type:''}" readonly data-pick></div>`:
+ f==='video'?`<div class="field"><label>영상</label><div class="row"><span class="badge-add" data-bbpick><b style="font-size:10px">·REC</b><span id="vcnt">${pre?2:0}/2</span></span><span class="small muted" style="line-height:17px">${o.videoNote}</span></div></div>`:
+ f==='photo'?`<div class="field"><label>사진</label><div class="row"><span class="badge-add" data-photo>📷<span id="pcnt">${pre?1:0}/10</span></span><span class="small muted" style="line-height:17px">관련 사진을 추가하시면 좀 더 정확한 분석 결과를 얻을 수 있습니다.</span></div></div>`:
+ f==='time'?`<div class="field"><label>일시</label><div class="row" style="gap:8px"><input class="input" data-in placeholder="사고 날짜" value="${pre?pre.time.split(' ')[0]:''}"><input class="input" data-in placeholder="사고 시간" value="${pre?pre.time.split(' ')[1]:''}"></div></div>`:
+ f==='place'?`<div class="field"><label>위치</label><div style="position:relative"><input class="input" data-in placeholder="사고 장소를 입력해 주세요" value="${pre?pre.place:''}" style="padding-right:96px"><span style="position:absolute;right:14px;top:15px;font-size:13px;font-weight:700;cursor:pointer" data-toast="15-1 지도에서 위치 찾기 (데모)">지도로 찾기 ›</span></div></div>`:
+ f==='car'?`<div class="field"><label>차종</label><div class="row" style="gap:8px"><input class="input" data-in placeholder="연식 (예: 2021)"><input class="input" data-in placeholder="차종 (예: 아반떼)"></div></div>`:
+ `<div class="field"><label>${o.descLabel}</label><textarea class="input" data-in placeholder="${o.descPh}">${pre?pre.body:''}</textarea></div>`).join('')}
+ <button class="btn btn-primary" id="submitW" ${pre?'':'disabled'}>${o.cta}</button><div style="height:30px"></div></div>`},
+ guard(){const el=document.querySelector('.page');const dirty=[...el.querySelectorAll('[data-in]')].some(i=>i.value&&i.value!==i.defaultValue)||el._att;if(!dirty)return true;
+  modal({title:'작성 중단',q:'작성을 그만할까요?',body:'지금 나가면 입력한 내용은 저장되지 않아요.',cancel:'계속 작성',ok:'그만하기',okCls:'mb-danger',onOk:()=>{stack.pop();render('pop')}});return false},
+ mount(el,p){const btn=el.querySelector('#submitW');const chk=()=>{btn.disabled=!([...el.querySelectorAll('[data-in]')].some(i=>i.value)||el._att)};
+  el.querySelectorAll('[data-in]').forEach(i=>i.addEventListener('input',chk));el.querySelector('[data-help]').onclick=()=>o.help();
+  const pick=el.querySelector('[data-pick]');if(pick)pick.onclick=()=>sheet(`<h3>교통위반 유형</h3>${['교통위반(고속도로 포함)','끼어들기 금지 위반','진로변경 위반','과속/난폭 운전','신호 위반'].map(t=>`<div class="list-row" data-t="${t}">${t}</div>`).join('')}`,L=>L.querySelectorAll('[data-t]').forEach(r=>r.onclick=()=>{pick.value=r.dataset.t;$('#layer').innerHTML='';chk()}));
+  const bb=el.querySelector('[data-bbpick]');if(bb)bb.onclick=()=>sheet(`<h3>블랙박스 영상 선택</h3><p class="small muted" style="padding:0 20px 8px">${o.bbFilter?"블랙박스의 '긴급녹화' 영상만 보여드려요.":'블랙박스에 저장된 영상이에요.'}</p>${[['긴급 녹화','2026.06.01 13:04'],['긴급 녹화','2026.05.15 00:44'],...(o.bbFilter?[]:[['주행 충격','2026.05.05 17:24']])].map(v=>`<div class="list-row" data-v><div class="vthumb"><b>Front</b></div><div style="flex:1"><b>${v[0]}</b><div class="small muted">${v[1]}</div></div><span class="btn-sm">선택</span></div>`).join('')}`,L=>L.querySelectorAll('[data-v]').forEach(r=>r.onclick=()=>{const c=el.querySelector('#vcnt');c.textContent=Math.min(2,parseInt(c.textContent)+1)+'/2';el._att=1;$('#layer').innerHTML='';chk();toast('영상을 첨부했어요')}));
+  const ph=el.querySelector('[data-photo]');if(ph)ph.onclick=()=>{const c=el.querySelector('#pcnt');c.textContent=Math.min(10,parseInt(c.textContent)+1)+'/10';el._att=1;chk();toast('사진을 첨부했어요 (데모)')};
+  btn.onclick=()=>{if(btn.disabled)return;o.save(el,p);stack.pop();render('pop');toast(o.done)}}}}
+S.vioList=histPage({title:'위반 신고',key:'vio',icon:ICON.shield(),introT:'교통위반 신고 내용을 미리 저장해 두세요',introB:'긴급녹화 영상과 위치를 담아 작성해 두고,<br>저장한 내용은 아래 목록에서 확인할 수 있어요.',empty:'접수한 신고 내역이 없어요.',note:'! 신고 이력은 30일간 저장 후<br>자동 삭제 됩니다.',write:'vioWrite',detail:'vioDetail',help:vioHelp});
+S.accList=histPage({title:'사고 분석',ai:1,key:'acc',icon:ICON.spark(),introT:'영상만 올리면 AI가 사고 상황을 분석해요',introB:'블랙박스 영상으로 사고 과실비율을 확인해 보세요.<br>결과는 아래 목록에서 확인할 수 있어요.',empty:'아직 요청한 사고 분석이 없어요.',note:'! AI 분석 이력은 30일간 저장 후<br>자동 삭제 됩니다.',write:'accWrite',help:()=>modal({title:'사고 분석 도움말',body:'블랙박스 영상(최대 2개)과 사진(최대 10장), 일시·위치·설명을 입력하면 AI가 사고 상황과 과실비율을 분석해요. 결과는 분석 후 30일간 제공돼요.',single:1,ok:'닫기'})});
+S.repList=histPage({title:'수리 견적',ai:1,key:'rep',icon:ICON.spark(),introT:'사진만 올리면 AI가 수리비를 알려드려요',introB:'파손 부위 사진으로 예상 수리 견적을 받아보세요.<br>결과는 아래 목록에서 확인할 수 있어요.',empty:'아직 접수한 수리 견적이 없어요.',note:'! 분석 결과는 분석 후 30일만 제공됩니다.<br>만료되기 전 다운을 받아 주세요.',write:'repWrite',help:()=>modal({title:'수리 견적 도움말',body:'손상 부위 사진을 올리고 연식·차종을 입력하면 AI가 손상 단계와 예상 수리비 범위를 알려드려요.',single:1,ok:'닫기'})});
+S.vioWrite=writePage({title:'위반 신고',head:'교통위반 상황을\n입력해 주세요.',sub:'작성한 내용은 저장만 돼요.\n신고는 안전신문고에서 직접 해 주세요.',fields:['type','video','photo','time','place','desc'],descLabel:'신고 내용',descPh:'교통위반 사항을 신고해 주세요.(경찰청 요청사항: 신고내용에 위반행위를 구체적으로 적어주시기 바랍니다.)',videoNote:'블랙박스의 긴급녹화 영상을 첨부할 수 있어요.',bbFilter:1,cta:'저장하기',done:'신고 내용을 저장했어요',help:vioHelp,
+ save(el,p){const v=[...el.querySelectorAll('[data-in]')].map(i=>i.value);const it={type:v[0]||'교통위반',t:v[0]||'교통위반',time:(v[1]||'2026.11.02')+' '+(v[2]||'09:00'),place:v[3]||'위치 미입력',body:v[4]||''};it.d=it.time.replace(' ','  |  ');if(p.i!==undefined)Object.assign(st.vio[p.i],it);else st.vio.unshift(it)}});
+S.accWrite=writePage({title:'사고 분석',ai:1,head:'블랙박스 영상과 사진을 업로드 해 주시면,\nAI가 사고 상황을 분석해드립니다.',sub:'',fields:['video','photo','time','place','desc'],descLabel:'설명',descPh:'사고 상황에 대해 정확히 입력해 주시면 더욱 정확한 분석 결과를 도출할 수 있습니다.',videoNote:'블랙박스 영상을 업로드하여 교통 사고 분석 결과를 얻을 수 있습니다.',cta:'AI 분석',done:'분석을 요청했어요',help:()=>modal({title:'사고 분석 도움말',body:'영상 또는 사진 1개 이상과 일시·위치·설명을 입력해 주세요.',single:1,ok:'닫기'}),
+ save(el){const v=[...el.querySelectorAll('[data-in]')].map(i=>i.value);st.acc.unshift({d:'2026.11.02 | 09:00',t:v[2]||'사고 위치 미입력',s:'req'})}});
+S.repWrite=writePage({title:'수리 견적',ai:1,head:'손상된 부위 사진을 업로드 해 주시면,\nAI가 손상 단계와 예상 수리비를 분석해드립니다.',sub:'',fields:['photo','car','desc'],descLabel:'설명',descPh:'언제, 어떻게 손상되었는지 입력해 주시면 더욱 정확한 분석 결과를 도출할 수 있습니다.',cta:'AI 분석',done:'견적 분석을 요청했어요',help:()=>modal({title:'수리 견적 도움말',body:'사진 1장 이상과 연식·차종을 입력해 주세요.',single:1,ok:'닫기'}),
+ save(el){const v=[...el.querySelectorAll('[data-in]')].map(i=>i.value);st.rep.unshift({d:'2026.11.02 | 09:00',t:(v[1]||'차종 미입력')+', '+(v[0]||'-'),s:'ing'})}});
+function vioHelp(){$('#layer').innerHTML=`<div class="dim" data-dim><div class="modal" style="text-align:left" onclick="event.stopPropagation()"><h3 style="text-align:center">경찰청 신고 주의사항</h3><div style="background:var(--peach2);border-radius:10px;padding:14px;margin-bottom:14px"><b style="font-size:14px">앱에서는 신고 내용을 저장만 할 수 있어요</b><p style="font-size:13px;color:var(--sub);line-height:19px;margin:6px 0">작성한 내용은 경찰청에 바로 신고되지 않아요. 저장한 영상과 내용을 확인한 뒤 안전신문고 앱 또는 웹사이트에서 직접 신고해 주세요. 아래 신고 기한이 지나면 처분이 어려울 수 있어요.</p><b style="font-size:13px;color:var(--orange);cursor:pointer" data-toast="안전신문고 앱으로 이동 (데모)">안전신문고 바로가기 ›</b></div><p style="font-size:13px;line-height:20px;color:var(--ink)">※ 본 교통위반 신고는 경찰청 관할이며, 증거자료(사진/영상)에 위반사실이 명백해야 처분될 수 있습니다.<br><br>※ 신고내용에는 반드시 일시/장소/차량번호/위반행위를 구체적으로 작성해야 합니다.<br><br>※ 피신고자의 방어권 보장을 위해 위반일자로부터 2일 이내 신고된 건만 처분될 수 있습니다.</p><label class="row" style="justify-content:center;gap:8px;margin:16px 0;font-size:13.5px;color:var(--sub)"><input type="checkbox"> 다음부터 그만 보기</label><button class="btn btn-primary" onclick="document.getElementById('layer').innerHTML=''">닫기</button></div></div>`;$('[data-dim]').onclick=()=>$('#layer').innerHTML=''}
+S.vioDetail={cls:'gray',render:p=>{const v=st.vio[p.i||0];const row=(k,val,copy)=>`<div class="row" style="padding:14px 0;border-bottom:1px solid var(--line2)"><div style="flex:1"><div class="small muted">${k}</div><div style="font-size:15px;font-weight:${k==='신고 내용'?400:700};line-height:21px;margin-top:3px">${val}</div></div>${copy?`<button class="btn-sm row" style="gap:4px" data-copy="${k}">${ICON.copy}복사</button>`:''}</div>`;
+ return hdr(v.type,{right:`<span class="rt" data-go="vioWrite" ${gp({i:p.i||0})} style="cursor:pointer;color:var(--ink)">편집</span>`})+`<div class="body" style="padding:12px 16px 20px"><p class="small muted row" style="gap:6px;margin-bottom:12px">ⓘ 항목별 '복사'를 눌러 안전신문고 앱에 붙여넣어 주세요.</p>
+ <div class="card" style="padding:16px;margin-bottom:12px"><div class="row" style="justify-content:space-between;margin-bottom:12px"><b style="font-size:14px">첨부 파일</b><button class="btn-sm" data-toast="첨부 영상·사진을 갤러리에 저장했어요">⤓ 갤러리에 저장</button></div><div class="row" style="gap:8px"><div class="vthumb" style="width:72px;height:72px" data-go="player"><b style="top:5px;bottom:auto;background:#E5484D;border-radius:4px;padding:0 4px">긴급녹화</b></div><div class="vthumb" style="width:72px;height:72px" data-go="player"><b style="top:5px;bottom:auto;background:#E5484D;border-radius:4px;padding:0 4px">긴급녹화</b></div><span class="thumb" style="width:72px;height:72px"></span></div><div class="small muted" style="margin-top:10px">영상 2 · 사진 1</div></div>
+ <div class="card" style="padding:4px 16px"><b style="display:block;font-size:14px;padding:14px 0 4px">신고 내용</b>${row('위반 유형',v.type)}${row('일시',v.time)}${row('장소',v.place,1)}${row('신고 내용',v.body||'-',1).replace('border-bottom:1px solid var(--line2)','')}</div></div>
+ <div class="bottom-cta"><button class="btn btn-primary" data-toast="안전신문고 앱으로 이동 (데모)">안전신문고에서 신고하기 ↗</button><p class="small muted" style="text-align:center;margin-top:8px">안전신문고 앱이 없으면 웹사이트로 이동해요.</p></div>`},
+ mount(el,p){el.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>{const v=st.vio[p.i||0];const txt=b.dataset.copy==='장소'?v.place:v.body;try{navigator.clipboard&&navigator.clipboard.writeText(txt).catch(()=>{})}catch(_){}toast(`${b.dataset.copy}을(를) 복사했어요`)})}};
 
-kb.addEventListener('pointerdown', e => {
-  const keyEl = e.target.closest('.key');
-  if (!keyEl) return;
-  e.preventDefault();
-  keyEl.classList.add('pressed');
-  setTimeout(() => keyEl.classList.remove('pressed'), 90);
-  const k = keyEl.dataset.k;
-  if (k === 'shift') { shift = !shift; buildKeyboard(); return; }
-  if (k === 'mode')  { mode = mode === 'num' ? 'ko' : 'num'; shift = false; buildKeyboard(); return; }
-  if (k === 'noop')  return;
-  if (k === 'bs')    backspace();
-  else if (k === 'space') insertRaw(' ');
-  else if (k === 'return') { submit(); return; }
-  else if (mode === 'num') insertRaw(k);
-  else { inputJamo(k); if (shift) { shift = false; buildKeyboard(); } }
-  refreshInput();
-});
+/* =========================================================
+   05 가치봄 (탭 루트: 지도형 기본 ↔ TEXT형)
+   ========================================================= */
+function mapSVG(){return `<svg viewBox="0 0 375 600" preserveAspectRatio="xMidYMid slice" width="100%" height="100%"><rect width="375" height="600" fill="#F1EFE8"/><g fill="#E3E6DC">${[[20,40,110,90],[150,30,100,70],[270,40,90,110],[30,170,90,120],[150,140,110,100],[280,190,80,80],[20,330,120,90],[170,300,90,120],[280,320,80,110],[40,470,110,90],[200,460,140,100]].map(r=>`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" rx="6"/>`).join('')}</g><path d="M0 140 H375 M0 290 H375 M0 440 H375 M135 0 V600 M265 0 V600" stroke="#FFFFFF" stroke-width="14"/><path d="M0 520 C80 470 120 600 200 560 S330 470 375 500" stroke="#B9D7F0" stroke-width="22" fill="none"/><path d="M60 0 L20 600" stroke="#C8E6C9" stroke-width="10" opacity=".7"/></svg>`}
+const GB=[{k:'help',tag:'도와줘요',t:'탑마을 주차장 문콕, 목격하셨나요?',m:'탑마을 3단지 타워빌 · 50m',d:'09.07 02:00 ~ 04:00',img:1,x:82,y:30},{k:'share',tag:'공유해요',t:'야탑역 사거리 한 개 차로 공사 중',m:'야탑역 사거리 · 200m',d:'10.12 09:00 · 이웃이 알려준 소식',img:1,x:62,y:62},{k:'db',tag:'공공DB',t:'탄천 산책로 일부 구간 통제 안내',m:'탄천 산책로 · 300m',d:'성남시 공공정보 · 예시 데이터',x:20,y:55}];
+let gbView='map',gbFilter='all';
+S.gb={tab:'gb',render:()=>{const items=GB.filter(g=>gbFilter==='all'||g.k===gbFilter);const top=`<div style="position:relative;z-index:5;background:${gbView==='map'?'transparent':'#fff'}"><div class="gb-head" style="${gbView==='map'?'background:rgba(245,246,248,.96)':''}"><b style="font-size:20px;font-weight:900">가치봄</b><button class="gb-act" data-go="gbAct">내 활동</button></div>
+ <div style="${gbView==='map'?'background:rgba(245,246,248,.96);padding-bottom:4px':''}"><div class="search" data-toast="05-M1 지역 검색 (데모)">⌕ 성남시 분당구 야탑동</div><div class="chips">${[['all','전체'],['help','도와줘요'],['share','공유해요'],['db','공공DB']].map(c=>`<span class="chip ${c[0]===gbFilter?'on':''}" data-gf="${c[0]}">${c[1]}</span>`).join('')}</div></div></div>`;
+ const fab=`<button class="fab" id="fab" style="bottom:${gbView==='map'?118:104}px">${ICON.plus}<span>글쓰기</span></button>`;
+ if(gbView==='map')return `<div class="map">${mapSVG()}${items.map(g=>`<span class="mpin" style="left:${g.x}%;top:${g.y}%" data-go="gbDetail">${g.tag}</span>`).join('')}<span class="mylo" style="left:48%;top:48%"><i></i></span></div>${top}
+  <span class="mapbtn" style="bottom:252px" data-toast="현재 위치로 이동">◎</span><span class="mapbtn" style="bottom:202px" data-toast="주변 단속 CCTV 표시 (데모)">📹</span>
+  <div class="gsheet" id="gsheet"><div class="handle-hit" id="handle"><div class="handle"></div></div><div class="row" style="gap:8px"><b style="font-size:20px">지도에 보이는 소식</b><b style="font-size:20px;color:var(--orange)">${items.length}건</b></div><p class="small muted" style="margin-top:6px">도와줘요 ${items.filter(i=>i.k==='help').length} · 공유해요 ${items.filter(i=>i.k==='share').length} · 공공DB ${items.filter(i=>i.k==='db').length}</p></div>${fab}`;
+ return `${top}<div class="body tabpad" id="gbBody" style="background:#fff"><div class="handle-hit" id="handle" style="padding-top:2px"><div class="handle"></div></div><div style="padding:0 20px"><div class="row" style="gap:8px"><b style="font-size:20px">주변 소식</b><b style="font-size:20px;color:var(--orange)">${items.length}건</b></div><div class="small muted" style="margin:14px 0 4px">최근순 ⌄</div>
+  ${items.map(g=>`<div class="gitem" data-go="gbDetail"><div style="flex:1"><span class="tag t-${g.k}">${g.tag}</span><b style="display:block;font-size:16px;margin-bottom:4px">${g.t}</b><div class="small muted">${g.m}</div><div class="small muted" style="margin-top:4px">${g.d}</div></div>${g.img?'<span class="gimg"></span>':''}</div>`).join('')}</div></div>${fab}`},
+ mount(el){el.querySelectorAll('[data-gf]').forEach(c=>c.onclick=()=>{gbFilter=c.dataset.gf;render('fade')});
+  const h=el.querySelector('#handle');let y0=null;const set=v=>{if(v!==gbView){gbView=v;render('fade')}};
+  h.addEventListener('pointerdown',e=>{y0=e.clientY;h.setPointerCapture&&h.setPointerCapture(e.pointerId)});
+  h.addEventListener('pointerup',e=>{if(y0===null)return;const dy=e.clientY-y0;y0=null;if(gbView==='map'&&dy<-25)set('text');else if(gbView==='text'&&dy>25)set('map');else if(Math.abs(dy)<6)set(gbView==='map'?'text':'map')});
+  const fab=el.querySelector('#fab');fab.onclick=()=>{if(fab.classList.contains('open')){$('#layer').innerHTML='';fab.classList.remove('open');fab.innerHTML=ICON.plus+'<span>글쓰기</span>';return}
+   fab.classList.add('open');fab.innerHTML=ICON.x+'<span>닫기</span>';const b=parseInt(fab.style.bottom)+62;
+   $('#layer').innerHTML=`<div class="dim" style="background:rgba(17,19,24,.35);z-index:160" id="fabDim"></div><div class="fabmenu" style="bottom:${b}px"><div data-w="gbHelpW">${ICON.people('#E0480B')}<span>도와줘요<small>목격자·영상을 찾아요</small></span></div><div data-w="gbShareW"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F62C9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"/></svg><span>공유해요<small>주변 소식을 알려요</small></span></div></div>`;
+   fab.style.zIndex=170;$('#fabDim').onclick=()=>fab.click();document.querySelectorAll('[data-w]').forEach(w=>w.onclick=()=>{go(w.dataset.w)})}}};
+S.gbDetail={cls:'white',render:()=>hdr('도와줘요')+`<div class="body"><div class="vthumb" style="width:100%;height:220px;border-radius:0"></div><div class="pad"><div class="row" style="gap:10px"><span style="width:36px;height:36px;border-radius:50%;background:var(--bg2)"></span><div><b>야탑의 운전자</b><div class="small muted">작성자 · 2026.09.07 작성</div></div></div>
+ <h2 style="font-size:20px;font-weight:900;margin:18px 0 10px">탑마을 주차장 문콕, 목격하셨나요?</h2><p style="font-size:15px;line-height:24px;color:#333D4B">주차장에 금색으로 래핑된 캐스퍼가 제 차량입니다. 밤사이 운전석 문에 문콕으로 필름 손상과 찌그러짐이 생겼어요.<br><br>측면이라 제 블랙박스로는 차량을 찾기 어렵네요. 새벽 2~4시 사이 목격한 상황이 있다면 글로 알려주세요.</p>
+ <div style="margin-top:16px;background:var(--bg2);border-radius:12px;padding:14px;font-size:13px;line-height:22px">발생 장소 · 탑마을 3단지 타워빌 인근<br>사고 추정 시각 · 2026.09.07 03:00</div></div></div><div class="bottom-cta"><button class="btn btn-primary" data-toast="05-3_A 제보해요 작성 (데모)">✎ 제보해요</button></div>`};
+S.gbMine={cls:'white',render:()=>hdr('도와줘요')+`<div class="body pad"><div class="row" style="justify-content:space-between"><span class="pill p-req">공개 ▾</span><span class="small muted">작성 2026.09.24 · 종료 2026.10.24</span></div><button class="btn-sm" style="margin-top:10px" data-toast="게시기한을 7일 연장했어요">ⓘ 기한 연장</button>
+ <h2 style="font-size:20px;font-weight:900;margin:16px 0 10px">탑마을 주차장 문콕, 목격하셨나요?</h2><p style="font-size:15px;line-height:24px;color:#333D4B">주차장에 금색으로 래핑된 캐스퍼가 제 차량입니다. 밤사이 운전석 문에 문콕으로 필름 손상과 찌그러짐이 생겼어요.</p>
+ <h3 style="font-size:16px;margin:22px 0 4px">받은 제보 3건</h3><p class="small muted">3건 중 미확인 1건 · 최신 제보순</p>${[['미확인 · 이웃 운전자 A','새벽 3시경 옆 차량이 출차하는 모습을 봤어요','10.12 09:10 · 첨부 없음'],['이웃 운전자 B','주차장 출입구에서 찍힌 기록을 확인했어요','10.11 18:40 · 영상 1개'],['이웃 운전자 C','주차 당시 주변 상황을 사진으로 남겼어요','10.11 14:20 · 사진 1개']].map(r=>`<div style="padding:14px 0;border-bottom:1px solid var(--line2)" data-toast="05-2_A1 받은 제보 상세 (데모)"><div class="small" style="color:${r[0].startsWith('미확인')?'var(--orange)':'var(--sub)'}">${r[0]}</div><b style="font-size:15px">${r[1]} ›</b><div class="small muted">${r[2]}</div></div>`).join('')}</div>`};
+S.gbAct={cls:'white',render:()=>hdr('내 가치봄 활동')+`<div class="chips">${['전체 4','도와줘요 2','제보 2'].map((c,i)=>`<span class="chip ${i===0?'on':''}">${c}</span>`).join('')}</div><div class="body" style="padding:0 20px"><div class="small muted" style="margin:8px 0">내가 작성한 활동</div>
+ ${[['help','도와줘요','탑마을 주차장 문콕, 목격하셨나요?','탑마을 3단지 타워빌 · 10.12 09:20','받은 제보 3건 · 미확인 1건','gbMine'],['share','제보해요','야탑역 사고 요청에 목격 내용을 남겼어요','야탑역 4번 출구 · 10.11 18:40','','gbDetail'],['help','도와줘요','탄천 주차장 사고 영상을 찾고 있어요','탄천 공영주차장 · 10.10 08:10','받은 제보 0건','gbMine'],['share','공유해요','야탑역 사거리 공사 상황을 알렸어요','야탑역 사거리 · 10.09 14:30','','gbDetail']].map(r=>`<div class="gitem" data-go="${r[5]}"><div style="flex:1"><span class="tag t-${r[0]}">${r[1]}</span><b style="display:block;font-size:15px;margin-bottom:4px">${r[2]}</b><div class="small muted">${r[3]}</div>${r[4]?`<div class="small" style="color:var(--orange);margin-top:4px">${r[4]}</div>`:''}</div></div>`).join('')}</div>`};
+S.gbHelpW={cls:'white',render:()=>hdr('도와줘요')+`<div class="body pad"><p class="small muted" style="line-height:18px;margin-bottom:20px">발생 장소와 시각, 상황을 알려주세요.<br>당시 현장을 보거나 촬영한 이웃에게 도움을 요청해요.</p>
+ <div class="field"><label>제목</label><input class="input" placeholder="제목을 입력해 주세요"></div><div class="field"><label>사진·영상 (선택)</label><span class="badge-add" style="width:100%;height:56px;flex-direction:row;gap:6px" data-toast="05-1A 출처 선택 (데모)">＋ 사진·영상 추가</span></div>
+ <div class="field"><label>발생 장소</label><div class="input" style="display:flex;align-items:center;color:var(--sub2)" data-toast="지도에서 위치 선택 (데모)">지도에서 발생 장소를 선택해 주세요.</div></div><div class="field"><label>사고 추정 시각</label><div class="row" style="gap:8px"><input class="input" placeholder="날짜 선택"><input class="input" placeholder="시간 선택"></div><p class="small muted" style="line-height:17px">입력한 시각 전후 5분, 발생 위치 반경 50m에 있었던 사용자에게 도움 요청 알림을 보내요.</p></div>
+ <div class="field"><label>상황 설명</label><textarea class="input" placeholder="차량 특징과 사고 상황을 구체적으로 적어주세요."></textarea></div></div><div class="bottom-cta"><button class="btn btn-primary" data-reg>도와줘요 등록하기</button></div>`,mount(el){el.querySelector('[data-reg]').onclick=()=>{back();toast('도와줘요를 등록했어요')}}};
+S.gbShareW={cls:'white',render:()=>hdr('공유해요')+`<div class="body pad"><h2 style="font-size:22px;font-weight:900;line-height:32px">주변에 도움이 되는 소식을<br>나눠주세요</h2><p class="small muted" style="margin:6px 0 20px;line-height:18px">도로 통제, 공사, 위험 상황 등<br>직접 확인한 정보를 공유해 주세요.</p>
+ <div class="field"><label>공유할 위치 (필수)</label><div style="height:120px;border-radius:12px;overflow:hidden;position:relative" data-toast="05-3_B_L1 위치 선택 (데모)">${mapSVG()}</div></div><div class="field"><label>소식 유형</label><div class="row" style="gap:6px;flex-wrap:wrap">${['도로 통제','공사 중','위험 상황','기타'].map((c,i)=>`<span class="chip ${i===0?'on':''}" data-sc>${c}</span>`).join('')}</div></div>
+ <div class="field"><label>제목</label><input class="input" placeholder="제목을 입력해 주세요"></div><div class="field"><label>내용</label><textarea class="input" placeholder="다른 사람에게 도움이 될 정보를 적어주세요."></textarea></div></div><div class="bottom-cta"><button class="btn btn-primary" data-reg>공유하기</button></div>`,
+ mount(el){el.querySelectorAll('[data-sc]').forEach(c=>c.onclick=()=>{el.querySelectorAll('[data-sc]').forEach(x=>x.classList.remove('on'));c.classList.add('on')});el.querySelector('[data-reg]').onclick=()=>{back();toast('소식을 공유했어요')}}};
+
+/* =========================================================
+   06 내 차 관리 (탭 루트)
+   ========================================================= */
+S.mycar={tab:'mycar',render:()=>hdr('내 차 관리',{noBack:true})+`<div class="body tabpad" style="padding:20px 16px 32px;display:flex;flex-direction:column;gap:20px">
+ <div class="card tap" style="padding:16px" data-go="carInfo"><div class="row"><span style="width:56px;height:56px;border-radius:14px;background:#FFF0EC;display:flex;align-items:center;justify-content:center;font-size:26px">🚗</span><div style="flex:1"><b style="font-size:18px">하얀이</b><div class="small muted">현대 · 쏘나타 DN8 · 2022</div></div><span class="pill p-warn">내연기관</span></div><div style="margin-top:14px;background:#FFF0EC;border-radius:12px;padding:12px 16px"><b style="color:var(--orange);font-size:14px">엔진오일 교체 시기가 지났어요</b><div class="small" style="margin-top:2px">52,340km 주행 · 권장 교체 40,000km</div></div></div>
+ <div class="card" style="padding:16px"><div class="row" style="justify-content:space-between"><b style="font-size:16px">주행거리</b><span class="small muted" style="cursor:pointer" data-toast="06-3 주행거리 오차 보정 (데모)">오차 보정 ›</span></div><div style="margin:6px 0"><b style="font-size:34px">52,340</b> <span class="muted">km</span></div><div class="small muted">최근 업데이트 +12km · 4분 전</div></div>
+ <div><button class="btn btn-primary" style="border-radius:14px" data-toast="06-4 영수증 촬영 (카메라)">✦&nbsp;영수증 촬영하고 자동 등록</button><p class="small muted" style="margin:8px 0 0">최근 정비: 2026.03.02 · 스피드메이트 왕십리점</p></div>
+ <div class="card" style="padding:4px 16px"><div class="row" style="justify-content:space-between;padding:14px 0 6px"><b style="font-size:16px">정비</b><span class="small muted" data-go="maint" style="cursor:pointer">더보기 ›</span></div>${[['엔진오일 및 오일필터','마지막 교체 40,000km','정비 필요'],['에어컨 필터(항균필터)','마지막 교체 43,000km','58,000km'],['와이퍼 블레이드','마지막 교체 35,000km','정비 필요']].map(r=>`<div class="row" style="padding:16px 0;border-top:1px solid var(--line2);cursor:pointer" data-go="consum" ${gp({t:r[0]})}><div style="flex:1"><b style="font-size:15px">${r[0]}</b><div class="small muted">${r[1]}</div></div>${r[2]==='정비 필요'?'<span class="pill p-warn">정비 필요</span>':`<b class="small muted">${r[2]}</b>`}</div>`).join('')}</div>
+ <div class="card" style="padding:4px 16px"><div class="row" style="justify-content:space-between;padding:14px 0 6px"><b style="font-size:16px">기록</b><span class="small muted" data-go="records" style="cursor:pointer">더보기 ›</span></div>${[['GS칼텍스 성수점','2026-09-10 · 주유','58,000원'],['세차나라 성동점','2026-09-05 · 세차','15,000원'],['카센터ON 분당점','2026-08-29 · 정비','35,000원']].map(r=>`<div class="row" style="padding:16px 0;border-top:1px solid var(--line2)"><div style="flex:1"><b style="font-size:15px">${r[0]}</b><div class="small muted">${r[1]}</div></div><b>${r[2]}</b></div>`).join('')}</div>
+ <div class="card" style="padding:16px"><div class="row" style="justify-content:space-between;margin-bottom:12px"><b style="font-size:16px">차량 관리 팁</b><span class="small muted" data-toast="06-9 차량 관리 팁 목록 (데모)">더보기 ›</span></div><div class="row noscroll" style="gap:10px;overflow-x:auto">${[['장기 주차 시 배터리 방전 예방하기','#5E6B7E'],['셀프세차 전 체크리스트','#7B8E9E'],['타이어 공기압 점검','#4F5B69']].map(t=>`<div data-toast="06-10 차량 관리 팁 (데모)" style="flex-shrink:0;width:136px;height:132px;border-radius:14px;background:linear-gradient(180deg,${t[1]}AA,#20262D);color:#fff;font-weight:700;font-size:13px;padding:12px;display:flex;align-items:flex-end;cursor:pointer">${t[0]}</div>`).join('')}</div></div>
+ <p class="small" style="text-align:center"><span style="text-decoration:underline;color:var(--sub);cursor:pointer" id="resetSetup">[프로토타입] 최초 진입(06-1 최초설정) 상태로 보기</span></p></div>`,
+ mount(el){el.querySelector('#resetSetup').onclick=()=>{st.mycarSetup=false;toast('다음에 내 차 관리 탭을 누르면 최초설정이 나와요');tab('home')}}};
+S.mycarSetup={cls:'white',render:p=>hdr('내 차 관리',{right:`<span>${ICON.info}</span>`})+`<div class="body pad"><h2 style="font-size:22px;font-weight:900">차량 정보를 입력해 주세요</h2><p class="small muted" style="margin:6px 0 22px">제조사와 차종을 입력하고 별명을 설정해 주세요</p>
+ <div class="row" style="gap:8px"><div class="field" style="flex:1"><label>제조사</label><input class="input" value="현대"></div><div class="field" style="flex:1"><label>차종</label><input class="input" value="쏘나타 DN8"></div></div><div class="field"><label>등록일</label><input class="input" value="2022년 11월"></div><div class="field"><label>연료</label><input class="input" value="일반 휘발유"></div>
+ <div class="field"><label>현재 주행거리</label><input class="input" value="52,340"><p class="small muted" style="line-height:17px">블랙박스 주행 데이터로 주행거리를 자동 업데이트해요.<br>계기판의 현재 주행거리를 입력해 주세요.</p></div><div class="field"><label>차량 별명 (선택)</label><input class="input" placeholder="내차"></div></div><div class="bottom-cta"><button class="btn btn-primary" id="saveSetup">저장하기</button></div>`,
+ mount(el,p){el.querySelector('#saveSetup').onclick=()=>{st.mycarSetup=true;stack=[{id:'mycar'}];render('fade');toast('차량 정보를 등록했어요')};
+  const b=el.querySelector('[data-back]');b.removeAttribute('data-back');b.onclick=()=>{if(p.prev&&p.prev.length){stack=p.prev;render('pop')}else tab('home')}}};
+S.carInfo={cls:'white',render:()=>hdr('내차 정보')+`<div class="body pad"><div class="row" style="gap:8px"><div class="field" style="flex:1"><label>제조사</label><input class="input" value="현대"></div><div class="field" style="flex:1"><label>차종</label><input class="input" value="쏘나타 DN8"></div></div><div class="field"><label>등록일</label><input class="input" value="2026년 11월"></div><div class="field"><label>연료</label><input class="input" value="일반 휘발유"></div><div class="field"><label>차량 별명 (선택)</label><input class="input" value="하얀이"></div></div><div class="bottom-cta"><button class="btn btn-primary" data-sv>저장하기</button></div>`,mount(el){el.querySelector('[data-sv]').onclick=()=>{back();toast('저장했어요')}}};
+S.maint={cls:'white',render:()=>hdr('정비')+`<div class="body"><div style="padding:12px 16px 4px;font-weight:700">전체 정비 항목</div>${[['엔진오일 및 오일필터','마지막 교체 40,000km','정비 필요'],['에어컨필터(항균필터)','마지막 교체 43,000km','58,000km'],['와이퍼 블레이드','마지막 교체 35,000km','정비 필요'],['구동벨트','교체 이력 없음','정비 필요'],['미션오일','교체 이력 없음','80,000km'],['배터리','교체 이력 없음','60,000km'],['브레이크 오일','마지막 교체 38,000km','78,000km'],['에어클리너 필터','마지막 교체 43,000km','73,000km'],['타이어','마지막 교체 44,000km','84,000km']].map(r=>`<div class="list-row" data-go="consum" ${gp({t:r[0]})}><div style="flex:1"><b style="font-size:15px">${r[0]}</b><div class="small muted">${r[1]}</div></div>${r[2]==='정비 필요'?'<span class="pill p-warn">정비 필요</span>':`<b class="small muted">${r[2]}</b>`}</div>`).join('')}</div>`};
+S.consum={cls:'gray',render:p=>hdr((p.t||'에어컨필터').replace(/\(.*\)/,''),{right:`<span class="rt" data-toast="06-8-2 소모품 주기 설정 (데모)" style="cursor:pointer">주기설정</span>`})+`<div class="body" style="padding:16px;display:flex;flex-direction:column;gap:12px">${[['기간','8개월 / 12개월',67,'다음 교체까지 4개월 남음'],['주행거리','14,600km / 15,000km',97,'다음 교체까지 400km 남음']].map(c=>`<div class="card" style="padding:16px"><div class="row" style="justify-content:space-between"><b>${c[0]}</b><span class="small">${c[1]}</span></div><div style="height:8px;border-radius:9px;background:#EEF0F3;margin:12px 0"><div style="width:${c[2]}%;height:100%;border-radius:9px;background:${c[2]>90?'var(--orange)':'#3B6FF5'}"></div></div><div class="small muted">${c[3]}</div></div>`).join('')}
+ <b style="margin-top:8px">정비 히스토리</b><div class="card">${[['카센터ON 분당점','2026.05.12 · 43,210km','35,000원'],['홈플러스 오토큐','2025.09.03 · 31,450km','32,000원'],['스피드메이트 야탑점','2025.01.20 · 18,900km','30,000원']].map(r=>`<div class="list-row" data-toast="06-8-1-1 기록 상세 (데모)"><div style="flex:1"><b style="font-size:15px">${r[0]}</b><div class="small muted">${r[1]}</div></div><b>${r[2]}</b></div>`).join('')}</div></div><div class="bottom-cta"><button class="btn btn-primary" data-toast="06-7 내역 추가 (데모)">+ 내역 추가</button></div>`};
+S.records={cls:'white',render:()=>hdr('기록')+`<div class="body"><div style="padding:8px 16px"><b style="font-size:18px">차량 관리 기록을 확인하세요</b><p class="small muted">주유·정비·세차 내역을 한눈에 확인하세요.</p></div><div class="chips">${['전체','주유','세차','정비'].map((c,i)=>`<span class="chip ${i===0?'on':''}">${c}</span>`).join('')}</div>${[['2026.09',[['GS칼텍스 성수점','2026-09-10 · 주유','58,000원'],['세차나라 성동점','2026-09-05 · 세차','15,000원']]],['2026.08',[['카센터ON 분당점','2026-08-29 · 정비','35,000원'],['현대오일뱅크 마장점','2026-08-29 · 주유','50,000원'],['스피드메이트 야탑점','2026-08-20 · 정비','30,000원']]]].map(g=>`<div style="padding:14px 16px 4px;font-weight:700;color:var(--sub);font-size:13px">${g[0]}</div>${g[1].map(r=>`<div class="list-row"><div style="flex:1"><b style="font-size:15px">${r[0]}</b><div class="small muted">${r[1]}</div></div><b>${r[2]}</b></div>`).join('')}`).join('')}</div><div class="bottom-cta"><button class="btn btn-primary" data-toast="06-7 내역 추가 (데모)">내역 추가</button></div>`};
+
+/* =========================================================
+   20 더보기 (탭 루트) · 12 기기 관리 · 09 설정 · 10 알림 설정 · 18 AI 결과 보관함
+   ========================================================= */
+S.more={tab:'more',render:()=>hdr('더보기',{noBack:true,right:`<span class="rt" id="logout" style="cursor:pointer">로그아웃</span>`})+`<div class="body tabpad" style="padding:20px 16px;display:flex;flex-direction:column;gap:24px">
+ <div class="card" style="padding:18px 16px"><b style="font-size:13px">로그인 계정</b><div class="row" style="gap:8px;margin-top:12px"><span style="width:24px;height:24px;border-radius:6px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:12px">💬</span><b style="font-size:18px">fineuser@example.com</b></div></div>
+ <div><div class="small muted bold" style="margin-bottom:8px">내 보관함</div><div class="card"><div class="list-row" data-go="aiVault" style="border-radius:16px"><span style="flex:1;font-size:15px;font-weight:500">AI 결과 보관함</span>${ICON.chev}</div></div></div>
+ <div><div class="small muted bold" style="margin-bottom:8px">기기 관리</div>${st.device.registered?`<div class="card list-row" data-go="device" style="border-radius:16px;padding:10px"><span style="width:56px;height:56px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:22px">📷</span><div style="flex:1"><b style="font-size:16px">${st.device.name||st.device.model}</b><div class="small muted">연결된 차량 : ${st.device.car}</div></div>${ICON.chev}</div>`:`<div class="card list-row" data-toast="11 블랙박스 연결 (데모)" style="border-radius:16px"><span style="flex:1;font-weight:700;color:var(--orange)">+ 블랙박스 등록하기</span></div>`}</div>
+ <div><div class="small muted bold" style="margin-bottom:8px">설정·지원</div><div class="card">${[['알림 설정','settings'],['공지사항',''],['고객 지원',''],['약관 및 정책','']].map(r=>`<div class="list-row" ${r[1]?`data-go="${r[1]}"`:`data-toast="${r[0]} (데모)"`}><span style="flex:1;font-size:15px;font-weight:500">${r[0]}</span>${ICON.chev}</div>`).join('')}<div class="list-row" style="cursor:default"><span style="flex:1;font-size:15px;font-weight:500">버전 정보</span><b>1.0.12</b></div></div></div>
+ <p class="small muted" style="text-align:center;cursor:pointer" data-toast="회원 탈퇴 (데모)">회원 탈퇴</p></div>`,
+ mount(el){el.querySelector('#logout').onclick=()=>modal({title:'로그아웃',q:'로그아웃 할까요?',ok:'로그아웃',onOk:()=>toast('로그아웃 (데모)')})}};
+S.device={cls:'gray',render:()=>{const d=st.device;return hdr('기기 관리')+`<div class="body" style="padding:16px"><div class="card" style="padding:16px"><div class="row"><span style="width:56px;height:56px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:22px">📷</span><div style="flex:1"><b style="font-size:16px">${d.name||d.model}</b>${d.name?`<div class="small muted">${d.model}</div>`:''}</div><button class="btn-sm" id="nick">수정</button></div>
+ <div style="margin:14px 0;font-size:14px;line-height:28px"><div class="row" style="justify-content:space-between"><span class="muted">SSID</span><span>FineVu_X600AI_1c5e13</span></div><div class="row" style="justify-content:space-between"><span class="muted">연결 상태</span><b style="color:#16A34A">연결됨</b></div><div class="row" style="justify-content:space-between"><span class="muted">펌웨어</span><b>1.0.001</b></div></div><button class="btn" style="background:#E7E9ED" data-go="fw">업데이트</button>
+ <div style="border-top:1px solid var(--line2);margin-top:16px;padding-top:14px"><div class="small muted" style="margin-bottom:10px">연결된 차량</div><div class="row" style="background:var(--bg2);border-radius:12px;padding:12px"><span style="font-size:22px">🚗</span><div style="flex:1"><b>${d.car}</b><div class="small muted">핸즈프리 · 연결됨</div></div><button class="btn-sm" id="chgCar">수정</button></div></div></div></div>
+ <div style="padding:12px 16px 28px;background:var(--bg2)"><button class="btn" style="background:#fff;color:#DC2626" id="delDev">기기 삭제</button></div>`},
+ mount(el){el.querySelector('#nick').onclick=()=>sheet(`<h3>기기 이름 수정</h3><div style="padding:0 20px"><input class="input" id="nickIn" value="${st.device.name}" placeholder="기기 이름을 입력해 주세요"><button class="btn btn-primary" style="margin-top:14px" id="nickOk">저장</button></div>`,L=>{L.querySelector('#nickOk').onclick=()=>{st.device.name=L.querySelector('#nickIn').value.trim();$('#layer').innerHTML='';render('fade');toast('기기 이름을 저장했어요')}});
+  el.querySelector('#chgCar').onclick=()=>sheet(`<h3>내 차량 블루투스를 선택해 주세요</h3>${[['SONATA_DN8','핸즈프리 · 최근 연결: 오늘'],['KIA EV3','핸즈프리 · 최근 연결: 3일 전'],['Galaxy Buds2','이어폰 · 최근 연결: 어제']].map(b=>`<div class="list-row" data-bt="${b[0]}"><span style="font-size:20px">${b[0].startsWith('Galaxy')?'🎧':'🚗'}</span><div style="flex:1"><b>${b[0]}</b><div class="small muted">${b[1]}</div></div></div>`).join('')}`,L=>L.querySelectorAll('[data-bt]').forEach(r=>r.onclick=()=>{const n=r.dataset.bt;$('#layer').innerHTML='';if(n===st.device.car){toast('현재 연결된 차량이에요');return}
+   modal({title:'연결 차량 변경',q:`${n}로 변경할까요?`,body:`기존 차량(${st.device.car}) 등록은 해제돼요.<br>블랙박스는 ${n}와 연결돼요.`,ok:'변경하기',onOk:()=>{st.device.car=n;render('fade');toast('연결 차량을 변경했어요')}})}));
+  el.querySelector('#delDev').onclick=()=>modal({title:'블랙박스 기기 삭제',q:'등록된 블랙박스를 삭제할까요?',body:'블랙박스와 연결된 차량 등록이 함께 해제돼요.<br>보관함에 저장한 파일은 유지돼요.',ok:'기기 삭제',okCls:'mb-danger',onOk:()=>{st.device.registered=false;back();toast('기기를 삭제했어요')}})}};
+S.bbset={cls:'white',render:()=>hdr('블랙박스 설정')+`<div class="body"><div style="padding:12px 16px;background:var(--bg2)"><div class="small muted">기기 정보</div><div class="row" style="justify-content:space-between;margin-top:6px"><span>모델명</span><b>X600 AI</b></div><div class="row" style="justify-content:space-between"><span>SSID</span><b>FineVu_X600AI_20DF34</b></div></div>${['소프트웨어 업데이트','환경설정','카메라 설정','메모리카드 설정','녹화 설정','안내음 설정','ADAS & 안전운전도우미 설정','전원 설정','블랙박스 설정 초기화'].map((r,i)=>`<div class="list-row" ${i===0?'data-go="fw"':`data-toast="${r} (09-${i+1}) 데모"`}><span style="flex:1;font-size:15px">${r}</span>${ICON.chev}</div>`).join('')}</div>`};
+S.fw={cls:'white',render:()=>hdr('소프트웨어 업데이트')+`<div class="body pad">${[['안전운전도우미','20261001','20261027'],['펌웨어','1.00.001','1.00.002']].map(f=>`<div class="card" style="border:1px solid var(--line2);padding:16px;margin-bottom:12px"><b style="font-size:16px">${f[0]}</b><div class="row" style="justify-content:space-between;margin-top:10px;font-size:14px"><span class="muted">현재 버전</span><span>${f[1]}</span></div><div class="row" style="justify-content:space-between;font-size:14px"><span class="muted">최신 버전</span><b style="color:var(--orange)">${f[2]}</b></div><button class="btn btn-primary" style="margin-top:12px;height:44px" data-fw>업데이트</button></div>`).join('')}<p class="small muted" style="line-height:18px">업데이트 중에는 블랙박스 전원을 끄지 마세요. 블랙박스와 Wi-Fi 연결이 필요해요.</p></div>`,
+ mount(el){el.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{$('#layer').innerHTML=`<div class="dim"><div class="modal"><h3>Wi-Fi 연결 중이에요</h3><div class="b" style="text-align:center">BLE로 연결된 블랙박스의 Wi-Fi에<br>연결하고 있어요.</div></div></div>`;setTimeout(()=>{$('#layer').innerHTML='';b.textContent='최신 버전';b.disabled=true;b.style.background='#D5D9DF';toast('업데이트를 완료했어요 (데모)')},1400)})}};
+S.settings={cls:'white',render:()=>hdr('알림 설정')+`<div class="body">${[['주행·안전',['주행/주차 리포트 알림','주정차 단속구역 안내']],['AI 분석',['분석 완료 알림']],['가치봄',['주변 도와줘요 알림','내 도와줘요에 제보 도착','도와줘요 게시 종료 사전 안내']],['기기',['펌웨어 업데이트 안내']],['내 차 관리',['소모품 교체 시기 알림','주유소 방문 확인 알림']]].map(g=>`<div style="padding:18px 16px 6px;font-size:13px;font-weight:700;color:var(--sub)">${g[0]}</div>${g[1].map(t=>`<div class="list-row" style="cursor:default"><span style="flex:1;font-size:15px">${t}</span><span class="tg" style="width:46px;height:28px;border-radius:999px;background:var(--orange);position:relative;cursor:pointer;transition:background .15s"><i style="position:absolute;top:3px;left:21px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s"></i></span></div>`).join('')}`).join('')}<div style="height:30px"></div></div>`,
+ mount(el){el.querySelectorAll('.tg').forEach(t=>t.onclick=()=>{const on=t.style.background!=='rgb(213, 217, 223)';t.style.background=on?'#D5D9DF':'var(--orange)';t.firstElementChild.style.left=on?'3px':'21px'})}};
+S.aiVault={cls:'white',render:p=>{const f=p.f||'all';const rows=[['acc','2026.06.01 | 13:05','롤스로이스 팬텀, 연식 -','ing',''],['rep','2026.06.01 | 13:05','스파크, 2020','done','다운로드'],['acc','2026.01.01 | 02:22','정동진리 64-3','done','보기'],['acc','2026.05.05 | 17:25','막계동 124','done','만료됨']].filter(r=>f==='all'||r[0]===f);
+ return hdr('AI 결과 보관함')+`<div class="chips">${[['all','전체'],['acc','사고 분석'],['rep','수리 견적']].map(c=>`<span class="chip ${c[0]===f?'on':''}" data-f="${c[0]}">${c[1]}</span>`).join('')}</div><div class="body">${rows.map(r=>`<div class="list-row"><span class="thumb"></span><div style="flex:1"><div class="small muted">${r[1]}</div><b style="font-size:16px">${r[2]}</b><div><span class="pill ${SP[r[3]][1]}" style="margin-top:6px">${r[0]==='acc'&&r[3]==='done'?'사고 분석 완료':SP[r[3]][0]}</span></div></div>${r[4]==='만료됨'?'<span class="small muted">만료됨</span>':r[4]?`<span class="btn-sm" data-toast="${r[4]==='보기'?'분석 결과 보기 (데모)':'리포트를 저장했어요'}">${r[4]}</span>`:''}</div>`).join('')}<p class="note">! 분석 결과는 분석 후 30일만 제공됩니다.<br>만료되기 전 다운을 받아 주세요.</p></div>`},
+ mount(el){el.querySelectorAll('[data-f]').forEach(c=>c.onclick=()=>{cur().p={f:c.dataset.f};render('fade')})}};
+
+/* ---------------- Boot ---------------- */
+render('fade');
 </script>
 </body>
 </html>
