@@ -129,11 +129,11 @@ textarea.input{height:120px;padding:14px;resize:none;line-height:1.5}
 .qnav>div+div{border-left:1px solid var(--line)}
 .ai{font-size:10px;font-weight:900;color:#fff;background:var(--brand);border-radius:4px;padding:0 3px;line-height:14px}
 .chat{height:52px;border-radius:40px;background:rgba(255,255,255,.95);border:1px solid #DCE1E7;box-shadow:0 8px 24px rgba(73,119,200,.05);display:flex;align-items:center;gap:10px;padding:0 10px 0 16px;cursor:text}
-.score{border-radius:16px;background:var(--peach);padding:15px;min-height:120px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.score{border-radius:16px;background:var(--peach);padding:15px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;gap:4px;cursor:pointer}
 .f-row{display:flex;align-items:center;gap:18px;padding:15px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .f-row .ic{width:24px;display:flex;justify-content:center;flex-shrink:0}
-.f-row>div,.qnav>div,.score>div:first-child,.evcard p,.h-main h2{line-height:1.4}
-.score{height:120px}
+.f-row>div,.qnav>div,.score,.evcard p,.h-main h2{line-height:1.4}
+.score{height:160px}
 .devgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .devgrid>div{height:85px;border-radius:12px;background:#fff;border:1px solid #D4DBE8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:12px;font-weight:700;cursor:pointer}
 
@@ -297,9 +297,9 @@ S.home={tab:'home',render:()=>`
    </section>
    <section class="chat" id="chatInput">${ICON.spark('#5E6470',30)}<div style="flex:1;min-width:0;font-size:13px;line-height:18px;white-space:nowrap;overflow:hidden"><span id="chatPh" style="color:#8B9BB7;font-size:12px">궁금한 내용을 입력하세요...</span><span id="chatTx"></span><span id="caret" class="caret hidden"></span></div>
     <button id="sendBtn" style="width:36px;height:36px;border-radius:50%;border:2px solid #EA580C;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-label="보내기"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15.83V4.17M15 9.17l-5-5-5 5"/></svg></button></section>
-   <section style="display:flex;flex-direction:column;gap:5px">
+   <section style="display:flex;flex-direction:column;gap:10px">
     <div class="row" style="justify-content:space-between;height:52px"><h2 style="font-size:19px;font-weight:700">나의 안전운전 리포트</h2></div>
-    <div class="score tap" data-go="score"><div style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-size:11px;font-weight:700">전체 주행 종합 평가</span><span style="font-size:18px;font-weight:900">나의 누적 안전운전 점수</span><span style="font-size:14px;color:var(--sub)">기록된 18번의 주행을 종합했어요.</span><span style="font-size:13px;font-weight:700;text-decoration:underline">운전 습관 확인</span></div><div style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:42px;font-weight:900;line-height:56px">92</span><span style="font-size:13px;font-weight:500">/100</span></div></div>
+    <div class="score tap" data-go="score"><span style="font-size:12px;font-weight:700">전체 주행 종합 평가</span><div class="row" style="justify-content:space-between;align-items:flex-start"><div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:18px;font-weight:900">나의 누적 안전운전 점수</span><span style="font-size:12px;color:var(--sub)">기록된 18번의 주행을 종합했어요.</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span style="font-size:40px;font-weight:900;line-height:40px">92</span><span style="font-size:13px;font-weight:500">/100</span></div></div><span style="font-size:15px;font-weight:700;text-decoration:underline">운전 습관 확인</span></div>
     <div class="f-row" data-go="reports"><span class="ic">${ICON.doc}</span><div style="flex:1;display:flex;flex-direction:column;gap:4px"><b style="font-size:16px">주행 일지</b><span style="font-size:14px;color:var(--sub)">9월 · 총 428 km 주행</span></div>${ICON.chev}</div>
    </section>
    <section style="display:flex;flex-direction:column;gap:20px;padding:13px 0 5px">
