@@ -1326,6 +1326,97 @@ const _accRep=S.report;
 S.report={...S.report,render:p=>(p.kind||'acc')==='acc'?accReportHTML(p):_accRep.render(p),
  mount:(el,p)=>{if((p.kind||'acc')==='acc')accReportMount(el);else if(_accRep.mount)_accRep.mount(el,p)}};
 
+/* ---- 17-1 수리 견적 리포트 (모바일 뷰 · 샘플: estimate_report.pdf 기준) ---- */
+(function(){const css=document.createElement('style');css.textContent=`
+.er-total{margin-top:16px;background:linear-gradient(135deg,#FFF4EC,#FFE7D4);border-radius:14px;padding:14px 16px}
+.er-total span{font-size:12px;color:#9A4A12}
+.er-total b{display:block;font-size:22px;font-weight:800;color:var(--ink);margin-top:2px;letter-spacing:-.02em}
+.er-total small{display:block;font-size:11px;color:#B5703A;margin-top:4px}
+.er-costs{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.er-cost{display:flex;align-items:center;gap:10px;background:var(--page);border-radius:12px;padding:11px 12px}
+.er-cost i{font-style:normal;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.er-cost div{flex:1;min-width:0}
+.er-cost span{display:block;font-size:11px;color:var(--sub2)}
+.er-cost b{display:block;font-size:14px;color:var(--ink)}
+.er-cost em{font-style:normal;font-size:11px;color:var(--sub);text-align:right;max-width:110px;line-height:15px}
+.er-dmg{border:1px solid var(--line2);border-radius:12px;padding:12px;margin-top:10px}
+.er-dmg .h{display:flex;align-items:center;gap:8px}
+.er-dmg .h b{font-size:15px;color:var(--ink)}
+.er-dmg .t{font-size:12.5px;font-weight:600;color:var(--ink);margin-top:8px}
+.er-dmg p{font-size:12px;line-height:18px;color:var(--sub);margin-top:4px}
+.er-sv{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+.er-sv.mid{background:#FFF3D6;color:#A15C00}.er-sv.high{background:var(--redbg);color:var(--red)}
+.er-work{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #F0F1F4}
+.er-work:last-child{border-bottom:0}
+.er-work>b{width:44px;flex-shrink:0;font-size:13px;color:var(--ink)}
+.er-work div{flex:1;min-width:0;font-size:12.5px;line-height:18px;color:#3A424C}
+.er-work div span{display:block;font-size:12.5px;font-weight:700;color:var(--brand);margin-top:3px}
+.er-none{font-size:12.5px;color:var(--sub2);background:var(--page);border-radius:10px;padding:10px 12px}
+.er-chk{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #F0F1F4}
+.er-chk:last-child{border-bottom:0}
+.er-chk i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--peach);color:var(--brand);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.er-chk b{display:block;font-size:13px;color:var(--ink)}
+.er-chk p{font-size:12px;line-height:18px;color:var(--sub);margin-top:3px}
+.er-period{display:flex;gap:8px;margin-top:12px}
+.er-period div{flex:1;background:var(--page);border-radius:12px;padding:12px 10px;text-align:center}
+.er-period div.on{background:var(--peach)}
+.er-period span{display:block;font-size:11px;color:var(--sub2)}
+.er-period b{display:block;font-size:15px;color:var(--ink);margin-top:3px}
+.er-period div.on b{color:var(--brand)}
+.er-period small{display:block;font-size:10.5px;color:var(--sub2);margin-top:2px}`;document.head.appendChild(css)})();
+
+const REP_SAMPLE={
+ title:'차량 수리 견적서',made:'2026-06-10 05:22:41',carIn:'차종: k5',car:'기아 K5',
+ cause:'측면 마찰 및 충돌로 인한 긁힘 및 찌그러짐',
+ sum:'후도어부터 후휀더까지 이어지는 넓은 범위의 찌그러짐, 긁힘 및 도장 손상 발생',
+ costs:[{k:'부품비',r:'0원 ~ 0원',n:'해당 사항 없음 (판금 복원 진행)',ic:'부',c:'#E8F0FF',fc:'#335EA6'},
+  {k:'공임비',r:'250,000원 ~ 350,000원',n:'후도어 및 후휀더 판금 공임',ic:'공',c:'#E5F5ED',fc:'#216E4D'},
+  {k:'도색비',r:'450,000원 ~ 550,000원',n:'후도어 및 후휀더 도색 비용',ic:'도',c:'#FFF0E4',fc:'#E96E0A'}],
+ total:'700,000원 ~ 900,000원',
+ dmg:[{p:'후도어',lv:'중간',cls:'mid',t:'찌그러짐 및 스크래치',e:'도어 패널 중앙부부터 후면 끝단까지 가로로 길게 이어진 찌그러짐과 긁힌 자국'},
+  {p:'후휀더',lv:'심각',cls:'high',t:'깊은 찌그러짐, 긁힘, 도장 벗겨짐',e:'휠 하우스 상단 부위의 심한 굴곡(찌그러짐) 및 철판이 드러날 정도의 도장 손상'}],
+ sheet:[['후도어','찌그러진 부위 덴트 및 판금 복원, 휀더와의 단차 조정','100,000 ~ 150,000원'],['후휀더','깊게 찌그러진 부위 강판 인출(판금) 및 면 맞춤 작업','150,000 ~ 200,000원']],
+ paint:[['후도어','후도어 전체 보수 도장','200,000 ~ 250,000원'],['후휀더','후휀더 전체 보수 도장 (블렌딩 포함)','250,000 ~ 300,000원']],
+ check:[['뒷바퀴 휠 및 타이어 손상','후휀더 휠 하우스 인근의 강한 마찰로 인해 휠 표면 스크래치나 타이어 측면 코드 절상 여부 확인 필요'],
+  ['휠 얼라인먼트 점검','측면 하단부에 가해진 충격으로 후륜 서스펜션 정렬이 틀어졌을 가능성 존재'],
+  ['사이드 스텝 (로커 패널) 손상','사진상 명확하지 않으나 후도어 하단과 맞닿는 사이드 스텝의 긁힘 여부 실차 확인 필요']],
+ period:{work:'2일 ~ 4일',parts:'0일',partsN:'주요 부품: 해당 사항 없음',total:'2일 ~ 4일'}};
+
+function repReportHTML(){const R=REP_SAMPLE,kv=(k,v)=>`<div class="ar-kv"><span>${k}</span><b>${v}</b></div>`,
+ work=rows=>rows.map(w=>`<div class="er-work"><b>${w[0]}</b><div>${w[1]}<span>${w[2]}</span></div></div>`).join('');
+ return hdr('수리 견적 리포트')+`<div class="body ar">
+ <div class="ar-top"><div class="ar-brand">FINE AI</div>
+  <div class="ar-tt"><h2>${R.title}</h2><span class="ar-tag">샘플</span></div>
+  <div class="ar-date">분석 일시 ${R.made}</div>
+  <div class="er-total"><span>예상 수리비 합계</span><b>${R.total}</b><small>부품비 + 공임비 + 도색비 범위 합산 · 예상 기간 ${R.period.total}</small></div></div>
+
+ <div class="ar-card"><div class="ar-ch"><i>1</i>차량 정보 및 손상 개요</div>
+  ${kv('분석 일시',R.made)}${kv('차량(입력)',R.carIn)}${kv('차량 정보',R.car)}${kv('손상 추정 원인',R.cause)}${kv('손상 부위 요약',R.sum)}
+  <div class="er-costs">${R.costs.map(c=>`<div class="er-cost"><i style="background:${c.c};color:${c.fc}">${c.ic}</i><div><span>예상 ${c.k}</span><b>${c.r}</b></div></div>`).join('')}</div></div>
+
+ <div class="ar-card"><div class="ar-ch"><i>2</i>손상 부위 상세 분석</div>
+  ${R.dmg.map(d=>`<div class="er-dmg"><div class="h"><b>${d.p}</b><span class="er-sv ${d.cls}">손상 정도 ${d.lv}</span></div><div class="t">${d.t}</div><p>이미지 근거 · ${d.e}</p></div>`).join('')}</div>
+
+ <div class="ar-card"><div class="ar-ch"><i>3</i>수리 방법 및 작업 내역</div>
+  <div class="ar-sh">3-1. 교환(Exchange) 필요 부품</div><div class="er-none">해당 없음</div>
+  <div class="ar-sh">3-2. 판금/용접 작업</div>${work(R.sheet)}
+  <div class="ar-sh">3-3. 도색(Painting) 필요 부위</div>${work(R.paint)}
+  <div class="ar-sh">3-4. 기타 작업</div><div class="er-none">해당 없음</div></div>
+
+ <div class="ar-card"><div class="ar-ch"><i>4</i>총 견적 금액</div>
+  <div class="er-costs">${R.costs.map(c=>`<div class="er-cost"><i style="background:${c.c};color:${c.fc}">${c.ic}</i><div><span>${c.k}</span><b>${c.r}</b></div><em>${c.n}</em></div>`).join('')}</div>
+  <div class="ar-kv" style="margin-top:6px"><span>합계(범위)</span><b style="color:var(--brand)">${R.total}</b></div></div>
+
+ <div class="ar-card"><div class="ar-ch"><i>5</i>추가 점검 필요 사항</div>
+  ${R.check.map((c,i)=>`<div class="er-chk"><i>${i+1}</i><div><b>${c[0]}</b><p>사유 · ${c[1]}</p></div></div>`).join('')}</div>
+
+ <div class="ar-card"><div class="ar-ch"><i>6</i>예상 수리 소요 기간</div>
+  <div class="er-period"><div><span>예상 작업 기간</span><b>${R.period.work}</b></div><div><span>부품 수급 기간</span><b>${R.period.parts}</b><small>${R.period.partsN}</small></div><div class="on"><span>총 소요 기간</span><b>${R.period.total}</b></div></div></div>
+ </div>`}
+const _repRep=S.report;
+S.report={..._repRep,render:p=>p.kind==='rep'?repReportHTML(p):_repRep.render(p),
+ mount:(el,p)=>{if(p.kind!=='rep'&&_repRep.mount)_repRep.mount(el,p)}};
+
 render('fade');
 
 </script>
