@@ -1940,6 +1940,21 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 </style>`);
 {const r0=S.gb.render;S.gb.render=p=>r0(p).replace('background:transparent"><div class="gb-head" style="background:rgba(245,246,248,.96)"','background:#F5F6F8"><div class="gb-head" style="background:#F5F6F8"')}
 
+/* ================= 가치봄 상단(상태바·타이틀·검색·필터) 흰색 배경 — 지도형/목록형 동일 (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.page:has(.gb-head)::before,.page:has(.gb-head):has(.map)::before{content:'';position:absolute;left:0;right:0;top:0;height:47px;z-index:6;background:#fff!important;pointer-events:none}
+@media (max-width:440px){.page:has(.gb-head)::before,.page:has(.gb-head):has(.map)::before{height:env(safe-area-inset-top,0px)}}
+</style>`);
+{const r0=S.gb.render;S.gb.render=p=>r0(p)
+  .replace(/(<div style="position:relative;z-index:5;background:)[^"]*"/,'$1#fff"')
+  .replace(/<div class="gb-head" style="[^"]*"/,'<div class="gb-head" style="background:#fff"')
+  .replace(/<div style="([^"]*)">(<div class="search")/,(m,st,s)=>`<div style="${/background/.test(st)?st.replace(/background:[^;]*/,'background:#fff'):st}">${s}`)}
+/* ================= 주행/주차 리포트: 피그마에 없는 하단 플로팅 버튼('운행일지 내보내기'·'주정차 단속 알림 확인') 삭제 (11.04) ================= */
+{const dr=S.drive.render,pr=S.park.render;
+ S.drive.render=p=>dr(p).replace(/<div class="fixb[^"]*"><button class="btn btn-sub" id="exLog">운행일지 내보내기<\/button><\/div>/,'');
+ S.park.render=p=>pr(p).replace(/<div class="fixb[^"]*"><button class="btn btn-sub" data-go="parking">주정차 단속 알림 확인<\/button><\/div>/,'');
+ S.drive.mount=el=>vvMount(el,'drive')}
+
 render('fade');
 
 </script>
