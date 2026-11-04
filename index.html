@@ -1955,7 +1955,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  S.park.render=p=>pr(p).replace(/<div class="fixb[^"]*"><button class="btn btn-sub" data-go="parking">주정차 단속 알림 확인<\/button><\/div>/,'');
  S.drive.mount=el=>vvMount(el,'drive')}
 
-/* ================= 11-7 블랙박스 연결 완료: '차량 별명 (선택)' 입력 → 홈 최상단 차량 이름 반영 (피그마 11-7 · 11-7-1 기준) (11.04) ================= */
+/* ================= 11-7 블랙박스 연결 완료: '차량 별명 (선택)' 입력 → 홈 최상단 차량 이름 반영(미입력 시 핸즈프리명) (피그마 11-7 · 11-7-1 기준) (11.04) ================= */
 document.head.insertAdjacentHTML('beforeend',`<style>
 .r7c .r7-lb{font-size:14px;margin-bottom:8px}.r7c .r7-lb span{color:var(--sub);font-weight:400}
 .r7c .input{height:48px}
@@ -1982,7 +1982,9 @@ for(const id of Object.keys(S)){const d=S[id];if(!d||typeof d.render!=='function
   <div class="r7-car"><span class="r7-ci">🚗</span><div><b style="font-size:15px">${st.device.car}</b><div class="small muted">핸즈프리 · 연결됨</div></div></div>
   <button id="nameSet" hidden></button></div>`);
  S.reg7.mount=(el,p)=>{m0&&m0(el,p);const n=el.querySelector('#r7Nick');
-  if(n){n.onclick=e=>e.stopPropagation();n.oninput=()=>{st.carNick=n.value;st.carName=n.value.trim()||CAR_DEFAULT}}
+  if(n){n.onclick=e=>e.stopPropagation();n.oninput=()=>{st.carNick=n.value;st.carName=n.value.trim()||st.device.car}}
+  /* 별명 미입력 시 연결된 차량의 핸즈프리명(예: SONATA_DN8)을 차량 이름으로 표시 */
+  if(!st.carNick.trim())st.carName=st.device.car
   const u=el.querySelector('#r7Up');if(u)u.onclick=()=>go('fw')}}
 
 render('fade');
