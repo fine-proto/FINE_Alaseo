@@ -1529,7 +1529,7 @@ const scBg=k=>{const u=SCBG[{driving:'drive',park:'park',zone:'zone',drive:'repo
 function scHTML(k){
  if(k==='unreg')return `<div class="nh-sc"${scBg(k)}><div><div class="lb" style="gap:5px">${NI.carS}등록된 기기가 없어요</div><p class="tt" style="white-space:normal;line-height:28px">내 차와 연결하고,<br>기록을 시작해 보세요.</p></div><button class="nh-btn" data-sc="reg">기기 연결하기</button></div>`;
  if(k==='norec')return `<div class="nh-sc"${scBg(k)}><div><div class="lb">기기 연결 완료</div><p class="tt" style="white-space:normal;line-height:28px">내 차와 연결했어요.<br>첫 기록을 기다리고 있어요.</p></div><button class="nh-btn off" disabled>주행 기록 준비 중</button></div>`;
- if(k==='driving')return `<div class="nh-sc"${scBg(k)}><div><p class="tt" style="margin-top:0">현재 주행 중 입니다.</p><div class="lb" style="margin-top:15px;letter-spacing:-.13px">운전 중에는 앱 사용을 자제해 주세요.</div></div>
+ if(k==='driving')return `<div class="nh-sc"${scBg(k)}><div><div class="lb">현재 주행 중</div><p class="tt">오늘도 안전운전 하세요</p><p class="ds">운전 중에는 앱 사용을 자제해 주세요.</p></div>
   <div class="nh-trip"><div><span>출발 시각</span><b>${hhmm(st.sc.tripStart)}</b></div><div><span><i class="nh-live"></i>주행 시간</span><b id="nhTrip">${elapsed()}</b></div></div></div>`;
  const D={park:['주차 중 있었던 일','주차 중 충격이 2번 감지됐어요','남겨진 영상을 확인해 보세요','주차 리포트 확인하기','park'],
   zone:['주차 위치 알림','단속 구역에 주차했어요','지금 위치는 주정차 단속 구역이에요','단속 알림 신청하기','zone'],
