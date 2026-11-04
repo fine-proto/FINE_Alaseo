@@ -1835,6 +1835,22 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .nh-trip b{line-height:22px}
 </style>`);
 
+/* ===== 11.04 시연 시나리오 '충격 없음' 선택 시 주행/주차 리포트를 충격 없는 리포트로 표시 ===== */
+(function(){
+ const okBox=(t,s)=>`<div style="margin:14px 0;background:var(--greenbg);color:var(--green);border-radius:12px;padding:14px;font-size:14px;font-weight:700;line-height:20px">${t}<br><span style="font-weight:500">${s}</span></div>`;
+ const RED=/<div style="margin:14px 0;background:var\(--redbg\);color:#B42318;[^"]*">[\s\S]*?<\/div>/;
+ const SHOCK_ROW=/<div class="row" style="padding:12px 0;align-items:flex-start;border-bottom:1px solid var\(--line2\)">(?:(?!<div class="row")[\s\S])*?중간 충격 감지(?:(?!<div class="row")[\s\S])*?<\/button><\/div>/g;
+ const dr=S.drive.render;S.drive.render=p=>{let h=dr(p);if(st.sc.driveEv!==false)return h;
+  return h.replace(RED,okBox('주행 중 특이사항이 없었어요.','주행 중 충격이 감지되지 않았어요.')).replace(SHOCK_ROW,'').replace('<circle cx="150" cy="105" r="6" fill="#EA580C" stroke="#fff" stroke-width="2"/>','')};
+ const pr=S.park.render;S.park.render=p=>{let h=pr(p);if(st.sc.parkEv!==false)return h;
+  return h.replace(RED,okBox('주차 중 특이사항이 없었어요.','충격이나 움직임이 감지되지 않았어요.'))
+   .replace(/(감지된 충격<\/div><b style="font-size:20px">)2회/,'$10회').replace(SHOCK_ROW,'')
+   .replace(/<path d="M0 55 L40[^"]*"/,'<path d="M0 55 L300 55"').replace(/<path d="M0 58 L45[^"]*"/,'<path d="M0 58 L300 58"')
+   .replace('G 센서 예시 데이터 · 손상 여부는 직접 확인이 필요해요.','주차 중 감지된 충격이 없어요.')};
+ /* 리포트 화면을 보고 있는 중에 시연 버튼을 누르면 바로 갱신 */
+ document.addEventListener('click',e=>{if(e.target.closest('[data-ev]')&&['drive','park'].includes(cur().id))setTimeout(()=>render('fade'),0)});
+})();
+
 render('fade');
 
 </script>
