@@ -1851,6 +1851,40 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  document.addEventListener('click',e=>{if(e.target.closest('[data-ev]')&&['drive','park'].includes(cur().id))setTimeout(()=>render('fade'),0)});
 })();
 
+/* ================= 06-6-1 내역 추가 팝업 · 종류 고정 · 사진 촬영 분기 · 전기차 충전 (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.ra-pop{display:flex;flex-direction:column;gap:12px;padding:12px 20px 8px}
+.ra-pop button{height:50px;border-radius:14px;border:1px solid #D4D7DC;background:#fff;font-size:15px;font-weight:700;color:#111}
+.ra-pop button:active{background:#F4F6FB}
+.input.locked{background:#F4F6FB;color:#20262D;cursor:default;pointer-events:none}
+</style>`);
+/* 차량 연료(내 차 정보 · 최초 설정의 '연료' 드롭다운 값) — '전기'면 주유 대신 충전 */
+st.fuel=st.fuel||'일반 휘발유';
+const isEV=()=>st.fuel==='전기';
+document.addEventListener('click',e=>{const o=e.target.closest('[data-dd="fuel"] .dd-menu div');if(o)st.fuel=o.textContent.trim()},true);
+for(const id of Object.keys(S)){const d=S[id];if(!d||typeof d.render!=='function')continue;const r0=d.render;
+ d.render=p=>{const h=r0(p);return h.indexOf('data-dd="fuel"')<0?h:h.replace(/(data-dd="fuel"><input class="input" readonly value=")[^"]*"/,`$1${st.fuel}"`)}}
+/* 06-6 기록 '내역 추가' → 06-6-1 내역 추가 팝업(정비 / 주유·충전 / 세차) → 선택한 종류로 06-7 내역 추가 */
+function recAddPopup(){const kinds=[['정비','정비 내역'],isEV()?['충전','충전 내역']:['주유','주유 내역'],['세차','세차 내역']];
+ sheet(`<div class="ra-pop">${kinds.map(k=>`<button data-rk="${k[0]}">${k[1]}</button>`).join('')}</div>`,L=>L.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>{$('#layer').innerHTML='';go('recAdd',{k:b.dataset.rk})}))}
+{const r0=S.records.render,m0=S.records.mount;
+ S.records.render=p=>r0(p).replace('<button class="btn btn-primary" data-go="recAdd">내역 추가</button>','<button class="btn btn-primary" id="raOpen">내역 추가</button>');
+ S.records.mount=(el,p)=>{m0&&m0(el,p);const b=el.querySelector('#raOpen');if(b)b.onclick=recAddPopup}}
+/* 06-7 내역 추가: 종류는 진입 시 정해진 값으로 고정(수정 불가) · 사진 촬영은 정비만 영수증 촬영(06-4-1), 나머지는 시스템 카메라 */
+{const r0=S.recAdd.render,m0=S.recAdd.mount;
+ S.recAdd.render=p=>{if(!p.f&&!p.edit&&(p.k||'주유')==='주유'&&isEV())p.k='충전';const h=r0(p);if(!p.edit)st.recRet=null;
+  return p.edit?h:h.replace(/<input class="input" readonly id="kSel" value="([^"]*?) ⌄" style="cursor:pointer">/,'<input class="input locked" readonly id="kSel" value="$1" tabindex="-1">')};
+ S.recAdd.mount=(el,p)=>{m0(el,p);if(p.edit)return;const k=el.querySelector('#kSel');if(k)k.onclick=null;
+  const f=p.f,add=el.querySelector('#phAdd');
+  add.onclick=()=>sheet(`<h3>사진 추가</h3><div class="list-row" data-ps="lib">사진 보관함</div><div class="list-row" data-ps="cam">사진 촬영</div>`,L=>L.querySelectorAll('[data-ps]').forEach(r=>r.onclick=()=>{$('#layer').innerHTML='';const done=()=>{f.ph=1;render('fade');toast('사진을 추가했어요')};
+   if(r.dataset.ps==='lib')gallery({single:1,onDone:done});
+   else if(f.k==='정비'){st.recRet=p;go('receiptCam')}   // 정비: 06-4-1 영수증 촬영 카메라(자동 인식)
+   else camera(done)}))}}                                 // 주유·충전·세차: 스마트폰 시스템 카메라
+/* 정비 내역에서 영수증 촬영 → 인식 결과를 원래 내역 추가 화면에 채워 복귀 */
+{const r0=S.receiptCam.render;S.receiptCam.render=p=>{const h=r0(p);return st.recRet?h.replace(/data-go="recAdd" data-p='[^']*'/,'data-back'):h}}
+{const m0=S.receiptAi.mount;S.receiptAi.mount=(el,p)=>{if(!st.recRet)return m0(el,p);const rp=st.recRet;
+ setTimeout(()=>{if(cur().id!=='receiptAi')return;Object.assign(rp.f,{place:'스피드메이트 용암점',date:'2026-11-02',km:'52343',amt:'89510',ph:1});rp.pre=1;st.recRet=null;stack.pop();render('pop')},1800)}}
+
 render('fade');
 
 </script>
