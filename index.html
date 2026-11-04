@@ -1905,6 +1905,29 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  S.mycar.render=p=>r0(p).replace(/<div class="card tap" data-go="tip" (data-p='\{"i":(\d+)\}') style="flex-shrink:0;width:150px[^"]*"><b[^>]*>([\s\S]*?)<\/b><span class="small muted">[\s\S]*?<\/span><\/div>/g,
   (m,dp,i,t)=>TIP_IMG[+i]?`<div class="tip-thumb tap" data-go="tip" ${dp} style="background-image:url(${TIP_IMG[+i]})"><b>${t}</b></div>`:m)}
 
+/* ================= 06 내 차 관리: '+ 내역 추가'를 주행거리 카드 밖으로 분리(피그마 기준) · 차량 관리 팁 PC 마우스 드래그 스와이프 (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.mc-add-wrap .mc-add{margin-top:0}
+.mc-add-wrap .small{margin-top:8px;padding:0 2px}
+.drag-x{cursor:grab;user-select:none;-webkit-user-select:none}
+.drag-x.dragging{cursor:grabbing}
+.drag-x.dragging *{pointer-events:none}
+.drag-x img{-webkit-user-drag:none}
+</style>`);
+{const r0=S.mycar.render,m0=S.mycar.mount;
+ S.mycar.render=p=>r0(p).replace(/\s*<button class="mc-add" id="mcAdd">\+ 내역 추가<\/button>(<div class="small muted" style="margin-top:8px">[^<]*<\/div>)<\/div>/,
+  '</div><div class="mc-add-wrap"><button class="mc-add" id="mcAdd">+ 내역 추가</button>$1</div>');
+ S.mycar.mount=(el,p)=>{m0&&m0(el,p);const t=el.querySelector('.tip-thumb');if(t)dragScrollX(t.parentElement)}}
+/* PC(마우스)에서 가로 목록을 끌어서 넘기기 · 끌었을 때는 카드 탭(상세 이동)으로 처리하지 않음 */
+function dragScrollX(row){if(!row||row.dataset.dragx)return;row.dataset.dragx=1;row.classList.add('drag-x');
+ let sx=0,sl=0,down=false,moved=false;
+ row.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;down=true;moved=false;sx=e.clientX;sl=row.scrollLeft});
+ window.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-sx;if(!moved&&Math.abs(dx)>5){moved=true;row.classList.add('dragging')}if(moved){row.scrollLeft=sl-dx;e.preventDefault()}});
+ window.addEventListener('pointerup',()=>{if(!down)return;down=false;if(moved){row.classList.remove('dragging');setTimeout(()=>moved=false,0)}});
+ row.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault()}},true);
+ /* 마우스 휠(세로)로도 가로 이동 — 목록 끝에 닿으면 페이지 세로 스크롤로 넘김 */
+ row.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;const max=row.scrollWidth-row.clientWidth;const nx=Math.max(0,Math.min(max,row.scrollLeft+e.deltaY));if(nx===row.scrollLeft)return;row.scrollLeft=nx;e.preventDefault()},{passive:false})}
+
 render('fade');
 
 </script>
