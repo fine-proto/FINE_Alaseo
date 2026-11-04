@@ -1795,6 +1795,26 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-ev],[data-
  if(b.dataset.ev)st.sc[b.dataset.ev]=!st.sc[b.dataset.ev];else st.score=+b.dataset.score;
  if(cur().id==='home')render('fade');else drawDemo()});
 
+
+/* ================= 시연 패널 가독성 · 모바일 시연 영역 구분 (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+/* PC 시연 패널: 폭을 넓혀 버튼 글자 한 줄 유지 */
+@media (min-width:760px){
+ .demo-panel{width:300px;padding:20px}
+ .demo-panel .dmb{white-space:nowrap;letter-spacing:-.3px;padding:0 6px;font-size:13px}
+}
+/* 모바일 시연 영역: 앱 화면과 확실히 구분되는 어두운 '시연 전용' 패널 */
+.mdemo{position:relative;margin:36px -16px 0;border:0;border-radius:0;padding:34px 16px 22px;background:#16191E;color:#E9ECEF;
+ background-image:repeating-linear-gradient(-45deg,#FACC15 0 10px,#16191E 10px 20px);background-size:100% 8px;background-repeat:no-repeat;background-color:#16191E}
+.mdemo::before{content:'시연 전용 · 실제 앱 화면이 아니에요';position:absolute;left:16px;top:16px;font-size:11px;font-weight:800;letter-spacing:.2px;color:#16191E;background:#FACC15;border-radius:6px;padding:3px 8px}
+.mdemo>b{display:block;margin-top:14px;color:#fff}
+.mdemo .small.muted,.mdemo .muted{color:#9AA3AE!important}
+.mdemo .dmb{background:#262B33;border-color:#3A414B;color:#E9ECEF}
+.mdemo .dmb.on{background:#FACC15;border-color:#FACC15;color:#16191E}
+.mdemo .dmb svg{stroke:currentColor}
+.mdemo-sep{margin:28px 0 0;text-align:center;font-size:11px;color:#9AA1AB}
+</style>`);
+
 render('fade');
 
 </script>
