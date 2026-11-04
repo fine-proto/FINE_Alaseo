@@ -1933,6 +1933,13 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 #tabbar{background:linear-gradient(180deg,rgba(242,244,246,0) 0%,rgba(242,244,246,.9) 87%,rgba(242,244,246,.9) 100%)}
 </style>`);
 
+/* ================= 가치봄: 상태바 영역에 지도 색이 비치던 문제 — 타이틀 영역과 같은 #F5F6F8로 덮음 (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.page:has(.gb-head)::before{content:'';position:absolute;left:0;right:0;top:0;height:47px;z-index:6;background:#F5F6F8;pointer-events:none}
+@media (max-width:440px){.page:has(.gb-head)::before{height:env(safe-area-inset-top,0px)}}
+</style>`);
+{const r0=S.gb.render;S.gb.render=p=>r0(p).replace('background:transparent"><div class="gb-head" style="background:rgba(245,246,248,.96)"','background:#F5F6F8"><div class="gb-head" style="background:#F5F6F8"')}
+
 render('fade');
 
 </script>
