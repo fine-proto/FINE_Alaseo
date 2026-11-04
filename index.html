@@ -1955,6 +1955,36 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  S.park.render=p=>pr(p).replace(/<div class="fixb[^"]*"><button class="btn btn-sub" data-go="parking">주정차 단속 알림 확인<\/button><\/div>/,'');
  S.drive.mount=el=>vvMount(el,'drive')}
 
+/* ================= 11-7 블랙박스 연결 완료: '차량 별명 (선택)' 입력 → 홈 최상단 차량 이름 반영 (피그마 11-7 · 11-7-1 기준) (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.r7c .r7-lb{font-size:14px;margin-bottom:8px}.r7c .r7-lb span{color:var(--sub);font-weight:400}
+.r7c .input{height:48px}
+.r7c .r7-dev{display:flex;align-items:center;gap:16px;margin:14px 0 10px}.r7c .r7-ic{width:56px;height:56px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:22px}
+.r7c .r7-kv{display:flex;justify-content:space-between;font-size:14px;margin-top:10px}.r7c .r7-kv span:first-child{color:var(--sub)}
+.r7c .r7-up{width:100%;height:50px;border-radius:14px;background:#E7E8EB;font-size:15px;font-weight:700;margin-top:16px}
+.r7c .r7-hr{height:1px;background:var(--line2);margin:14px 0}
+.r7c .r7-car{display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:12px;padding:12px}.r7c .r7-car .r7-ci{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px}
+</style>`);
+const CAR_DEFAULT='나의 쏘나타';st.carName=st.carName||CAR_DEFAULT;st.carNick=st.carNick||'';
+const escH=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* 차량 이름 표시 영역(홈 최상단·내 차 관리 등)에 설정한 별명 반영 */
+for(const id of Object.keys(S)){const d=S[id];if(!d||typeof d.render!=='function'||id==='reg7')continue;const r0=d.render;
+ d.render=p=>{const h=r0(p);return st.carName===CAR_DEFAULT||h.indexOf(CAR_DEFAULT)<0?h:h.split(CAR_DEFAULT).join(escH(st.carName))}}
+{const _sh=sheet;sheet=function(h,cb){return _sh(st.carName===CAR_DEFAULT?h:String(h).split(CAR_DEFAULT).join(escH(st.carName)),cb)}}
+/* 연결 요약 카드: 차량 별명 입력 / 기기 행(X600 AI) / SSID·펌웨어 / 업데이트 / 연결된 차량 */
+{const r0=S.reg7.render,m0=S.reg7.mount;
+ S.reg7.render=p=>r0(p).replace(/<div class="hdr[^"]*">[\s\S]*?<\/div><\/div>/,'').replace(/<div class="card" style="border:1px solid var\(--line2\);padding:16px;text-align:left">[\s\S]*?(?=\n <b )/,()=>`<div class="card r7c" style="border:1px solid var(--line2);padding:16px;text-align:left">
+  <div class="r7-lb"><b>차량 별명</b> <span>(선택)</span></div><input class="input" id="r7Nick" placeholder="차량 별명을 입력해 주세요." maxlength="15" value="${escH(st.carNick)}">
+  <div class="r7-dev"><span class="r7-ic">📷</span><b style="font-size:16px">X600 AI</b></div>
+  <div class="r7-kv"><span>SSID</span><span>FineVu_X600AI_1c5e13</span></div><div class="r7-kv"><span>펌웨어</span><b>1.0.001</b></div>
+  <button class="r7-up" id="r7Up">업데이트</button><div class="r7-hr"></div>
+  <div class="small muted" style="margin-bottom:10px">연결된 차량</div>
+  <div class="r7-car"><span class="r7-ci">🚗</span><div><b style="font-size:15px">${st.device.car}</b><div class="small muted">핸즈프리 · 연결됨</div></div></div>
+  <button id="nameSet" hidden></button></div>`);
+ S.reg7.mount=(el,p)=>{m0&&m0(el,p);const n=el.querySelector('#r7Nick');
+  if(n){n.onclick=e=>e.stopPropagation();n.oninput=()=>{st.carNick=n.value;st.carName=n.value.trim()||CAR_DEFAULT}}
+  const u=el.querySelector('#r7Up');if(u)u.onclick=()=>go('fw')}}
+
 render('fade');
 
 </script>
