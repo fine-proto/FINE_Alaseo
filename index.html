@@ -1756,6 +1756,45 @@ st.vTheme=0;
 Object.defineProperty(MAPS,'visited',{get:()=>VMAPS[st.vTheme]||VMAPS[0],configurable:true});
 for(const id of ['visited','visitedYear','visitedShare']){if(!S[id])continue;const r0=S[id].render;S[id].render=p=>r0(p).replace(/background:#F4F1E8;border:1px solid #C9C3B3/g,'background:#E9EAEC;border:1px solid #D4D6DA').replace('<img class="mapimg"','<img class="mapimg fit"')}
 
+
+/* ================= 운전 점수 문구 · 특이사항 없음 상황 카드 (11.04) ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.nh-btn.sub{background:#EEF0F3;color:#20262D}
+</style>`);
+/* 운전 점수: 제목 '나의 운전 점수' + 점수 구간별 문구 */
+st.score=92;
+const scoreMsg=s=>s>=90?'안전하게 잘 달리고 있어요':s>=70?'급가속만 줄이면 더 좋아져요':'운전 습관을 함께 점검해 봐요';
+/* 특이사항 없음 카드: 리포트에 이벤트가 없을 때 해당 리포트 카드 대신 표시 */
+st.sc.parkEv=true;st.sc.driveEv=true;
+scCards=function(){const c=[],S2=st.sc;
+ if(!st.device.registered)return ['unreg'];
+ if(st.noRecord)return [st.mode==='driving'?'driving':'norec'];
+ const pk=S2.parkEv?'park':'parkOk',dv=Date.now()<S2.reportReadyAt?'gen':(S2.driveEv?'drive':'driveOk');
+ if(st.mode==='driving'){c.push('driving');if(S2.parkReport)c.push(pk)}
+ else{if(st.parkZone)c.push('zone');c.push(dv);if(S2.parkReport)c.push(pk)}
+ // 카드가 넘치면 특이사항 없음 카드(우선순위 낮음)부터 제거
+ while(c.length>3){const i=c.lastIndexOf(c.find(k=>/Ok$/.test(k))||c[c.length-1]);c.splice(i,1)}
+ return c};
+{const _scHTML=scHTML;scHTML=function(k){
+ if(k==='parkOk')return `<div class="nh-sc"${scBg('park')}><div><div class="lb">주차 중 있었던 일</div><p class="tt">주차 중 특이사항이 없었어요</p><p class="ds">충격이나 움직임이 감지되지 않았어요</p></div><button class="nh-btn sub" data-sc="park">주차 리포트 보기</button></div>`;
+ if(k==='driveOk')return `<div class="nh-sc"${scBg('drive')}><div><div class="lb">주행 리포트</div><p class="tt">주행 중 특이사항이 없었어요</p><p class="ds">급가속 · 급감속 · 충격 없이 달렸어요</p></div><button class="nh-btn sub" data-sc="drive">주행 리포트 보기</button></div>`;
+ return _scHTML(k)}}
+{const r0=S.home.render;S.home.render=p=>{let h=r0(p);const s=st.score;
+ h=h.replace('전체 주행 종합 평가','나의 운전 점수').replace('기록된 18번의 주행을 종합',scoreMsg(s));
+ if(s!==92)h=h.replace((2*Math.PI*24.5*.92).toFixed(1)+' 999',(2*Math.PI*24.5*s/100).toFixed(1)+' 999').replace('<span style="font-size:20px">92</span>',`<span style="font-size:20px">${s}</span>`);
+ return h}}
+/* 시연 버튼: 리포트 이벤트 있음/없음 · 운전 점수 구간 */
+const evBtns=()=>`<div class="ev-demo"><p class="small muted" style="margin:12px 0 6px">리포트 이벤트 (특이사항 없음 카드)</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+ <button class="dmb ${st.sc.parkEv?'on':''}" data-ev="parkEv">주차 충격 ${st.sc.parkEv?'있음':'없음'}</button>
+ <button class="dmb ${st.sc.driveEv?'on':''}" data-ev="driveEv">주행 이벤트 ${st.sc.driveEv?'있음':'없음'}</button></div>
+ <p class="small muted" style="margin:12px 0 6px">운전 점수 (구간별 문구)</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${[92,78,64].map(v=>`<button class="dmb ${st.score===v?'on':''}" data-score="${v}">${v}점</button>`).join('')}</div></div>`;
+const addEv=root=>{if(!root||root.querySelector('.ev-demo'))return;const z=root.querySelector('[data-zone]');if(z)z.parentElement.insertAdjacentHTML('afterend',evBtns())};
+{const m0=S.home.mount;S.home.mount=(el,p)=>{const r=m0&&m0(el,p);addEv(el.querySelector('.mdemo'));return r}}
+{const d0=drawDemo;drawDemo=function(){d0();addEv(document.querySelector('#dpBtns'))}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ev],[data-score]');if(!b)return;
+ if(b.dataset.ev)st.sc[b.dataset.ev]=!st.sc[b.dataset.ev];else st.score=+b.dataset.score;
+ if(cur().id==='home')render('fade');else drawDemo()});
+
 render('fade');
 
 </script>
