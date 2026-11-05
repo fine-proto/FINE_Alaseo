@@ -1992,6 +1992,36 @@ st.profile.nick=st.profile.nick||'파인맨';
 {const r0=S.profile.render;S.profile.render=p=>{const h=r0(p);const v=p.v;if(v.nick===undefined)v.nick=st.profile.nick;
  return h.replace(/(<input class="input" data-pk="first" value="[^"]*"><\/div><\/div>)/,`$1\n <div class="field" style="margin:0"><label>닉네임</label><input class="input" data-pk="nick" value="${String(v.nick).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}"></div>`)}}
 
+/* ================= 06 내 차 관리 차량 카드·정비 안내·내역 추가 플로팅 (피그마 11.05) =================
+   - 연료 유형 배지('내연기관' 등) 삭제, 전기차인 경우에만 차량 아이콘에 전기차(번개) 아이콘
+   - 정비 필요 안내: 마지막 정비 시점 이후 현재까지 주행거리('교체 후 N km 경과'), 기간 기준 항목은 '교체 후 N개월 경과'
+   - '+ 내역 추가'를 가치봄 '글쓰기'와 같은 우측 하단 플로팅 버튼으로 */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.mc-ev{position:relative}
+.mc-ev i{position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-style:normal}
+.mc-fab{border-radius:999px;padding:0 16px;bottom:104px}
+.mc-cap{padding:0 2px;margin-top:-8px}
+</style>`);
+/* 정비 항목 마지막 정비 시점: km 기준(lastKm) 또는 기간 기준(lastDate) */
+const MAINT_LAST={'엔진오일 및 오일필터':{lastKm:30183}};
+const overdueText=t=>{const m=MAINT_LAST[t];if(!m)return '';
+ if(m.lastKm!=null)return `교체 후 ${Math.max(0,st.km-m.lastKm).toLocaleString()}km 경과`;
+ const d=new Date(m.lastDate),n=new Date();const mo=(n.getFullYear()-d.getFullYear())*12+n.getMonth()-d.getMonth();return `교체 후 ${Math.max(0,mo)}개월 경과`};
+const BOLT='<svg width="12" height="14" viewBox="0 0 10 12"><path d="M6 0 0 7h4l-1 5 6-7H5l1-5Z" fill="#38F244"/></svg>';
+{const r0=S.mycar.render;S.mycar.render=p=>{let h=r0(p);
+ // 연료 유형 배지 삭제 · 전기차 아이콘
+ h=h.replace(/<span class="pill[^"]*">(내연기관|전기|전기차|하이브리드)<\/span>/,'');
+ if(typeof isEV==='function'&&isEV())h=h.replace(/(<div class="row tap" data-go="carInfo"><span style=")([^"]*)(">🚗)/,'$1$2" class="mc-ev$3<i>'+BOLT+'</i>');
+ // 정비 필요 안내 문구 · 엔진오일 마지막 교체 시점
+ h=h.replace(/<div class="small[^"]*">[\d,]+km 주행 · 권장 교체 [\d,]+km<\/div>/,`<div class="small" style="color:#111">${overdueText('엔진오일 및 오일필터')}</div>`);
+ h=h.replace('마지막 교체 40,000km',`마지막 교체 ${MAINT_LAST['엔진오일 및 오일필터'].lastKm.toLocaleString()}km`);
+ // '+ 내역 추가' → 플로팅 버튼, 최근 정비 캡션은 주행거리 카드 하단에 유지
+ h=h.replace(/<div class="mc-add-wrap"><button class="mc-add" id="mcAdd">\+ 내역 추가<\/button>(<div class="small[^"]*"[^>]*>[^<]*<\/div>)<\/div>/,'<div class="mc-cap">$1</div>');
+ h=h.replace(/(<div class="body tabpad" style="[^"]*?)padding:16px 16px 40px/,'$1padding:16px 16px 110px');
+ return h+'<button class="fab mc-fab" id="mcAdd">+ 내역 추가</button>'}}
+/* 06-8 정비 목록·소모품 상세의 엔진오일 마지막 교체 시점도 동일하게 */
+for(const id of ['maint','consum']){const d=S[id];if(!d)continue;const r0=d.render;d.render=p=>{const h=r0(p);return /엔진오일/.test(h)?h.replace(/마지막 교체 40,000km/g,'마지막 교체 30,183km'):h}}
+
 render('fade');
 
 </script>
