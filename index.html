@@ -2037,6 +2037,71 @@ for(const id of ['maint','consum']){const d=S[id];if(!d)continue;const r0=d.rend
 {const NEW44='ⓘ 공공데이터 기준으로 실제와 다를 수 있어요. 주차 전 현장 안내를 우선 확인해 주세요.';
  new MutationObserver(()=>{const l=document.getElementById('layer');if(!l)return;l.querySelectorAll('.modal span.small').forEach(s=>{if(s.textContent.trim()==='ⓘ 공공데이터 기준으로 실제와 다를 수 있습니다.')s.textContent=NEW44})}).observe(document.getElementById('layer'),{childList:true,subtree:true})}
 
+/* ================= 04 단속 알림 신청 상태 흐름 (피그마 11.09) =================
+   - 지역(시/군/구)별 '신청 완료' 상태 하나를 04 카드 · 04-4 팝업 · 04-1 지역 시트가 공유
+   - 04 카드 4종: RiskCard / RiskCard_Nothing / RiskCard_complete / RiskCard_Not supported
+   - 04 카드 버튼은 재확인 팝업(04-6 신청 완료 · 04-7 신청 완료 취소), 04-1 지역 시트·04-4 팝업은 팝업 없이 토스트 */
+st.alertCities=[];                                   // 시연 시작 시 미신청 상태
+const ALERT_SOON=['이천시','여주시','파주시','김포시','광주시','하남시','과천시','의왕시','군포시','오산시','안성시','양주시','종로구','마포구','송파구','노원구'];
+const josaUl=c=>{const k=c.charCodeAt(c.length-1)-0xAC00;return c+(k>=0&&k<=11171&&k%28?'을':'를')};
+const isAlertDone=c=>st.alertCities.includes(c);
+const setAlertDone=(c,on)=>{st.alertCities=st.alertCities.filter(x=>x!==c);if(on)st.alertCities.push(c)};
+const EXT_IC=(col)=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>`;
+document.head.insertAdjacentHTML('beforeend',`<style>
+.rk{border-radius:14px;padding:16px}.rk.done{background:#fff;border:1px solid var(--line)}.rk:not(.done){background:var(--peach2)}
+.rk-b{width:100%;height:46px;border-radius:12px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
+.rk-b.pri{background:var(--orange);color:#fff}.rk-b.sec{background:#fff;color:#111;margin-top:8px}
+.rk-b.out{background:#fff;color:#111;border:1px solid #111;height:48px}.rk-b.txt{color:#6B7280;margin-top:4px}
+.rk-b.dis{background:#E5E7EB;color:#9CA3AF;cursor:default}
+.toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px}.toast.act button{color:#FDBA74;font-weight:700;font-size:13px}
+.as-h{padding:4px 20px 0}.as-h b{display:block;font-size:18px;margin-bottom:6px}.as-h p{font-size:14px;line-height:1.5;color:#6B7280}
+.as-b{display:flex;flex-direction:column;gap:10px;padding:18px 20px 8px}
+.as-b button{height:50px;border-radius:12px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
+.as-b .pri{background:var(--orange);color:#fff}.as-b .out{background:#fff;border:1px solid #D4D7DC;color:#111}.as-b .txt{color:#6B7280;font-weight:400}
+</style>`);
+function toastUndo(msg,undo){const t=$('#toast');t.innerHTML=`<span>${msg}</span><button id="tUndo">되돌리기</button>`;t.classList.add('show','act');clearTimeout(t._h);
+ t.querySelector('#tUndo').onclick=e=>{e.stopPropagation();t.classList.remove('show','act');undo()};t._h=setTimeout(()=>t.classList.remove('show','act'),3500)}
+function riskCardHTML(p){const city=p.region||'성남시',soon=ALERT_SOON.includes(city),done=!soon&&isAlertDone(city),none=!!p.none;
+ const title=done?`${city} 주정차 단속 알림을 신청했어요.`:none?'주정차 단속 정보가 확인되지 않아요.':'주정차 단속 정보가 있어요.';
+ const chip=!done&&!none?'<span class="pill" style="background:var(--red);color:#fff">단속구역</span>':'';
+ const cnt=none?'정보 없음<br>정보 없음':'N 건<br>N 건';
+ const note=done?'ⓘ 신청 정보 변경이나 서비스 해지는 지자체 알림 서비스에서 할 수 있어요.':none?'ⓘ 주정차 단속 정보가 없어도 단속될 수 있어요. 주차 전 현장 안내를 우선 확인해 주세요.':'ⓘ 공공데이터 기준으로 실제와 다를 수 있어요. 주차 전 현장 안내를 우선 확인해 주세요.';
+ const btns=soon?'<button class="rk-b dis" disabled>단속 알림 서비스 준비 중</button>'
+  :done?`<button class="rk-b out" data-go="alertWeb" ${gp({city})}>지자체 알림 서비스 바로가기${EXT_IC('#111')}</button><button class="rk-b txt" id="rkCancel">신청 완료 취소</button>`
+  :`<button class="rk-b pri" data-go="alertWeb" ${gp({city})}>단속 알림 신청${EXT_IC('#fff')}</button><button class="rk-b sec" id="rkDone">알림 신청 완료</button>`;
+ return `<div class="rk ${done?'done':''}"><div class="row" style="justify-content:space-between"><b>${title}</b>${chip}</div><div class="row" style="justify-content:space-between;font-size:13px;margin-top:10px"><span>• 주정차 단속 구역<br>• 주정차 단속 CCTV</span><span style="text-align:right">${cnt}</span></div><p class="small muted" style="margin:10px 0 12px;line-height:17px">${note}</p>${btns}</div>`}
+{const r0=S.parking.render,m0=S.parking.mount;
+ S.parking.render=p=>{let h=r0(p);if((p.tab||'pos')!=='pos')return h;
+  h=h.replace(/<div style="background:var\(--(?:peach2|bg2)\);border-radius:14px;padding:16px">[\s\S]*?단속 알림 신청<\/button><\/div>/,()=>riskCardHTML(p));
+  // 시연 링크: 제공 예정 지역(이천시) 보기
+  const soon=ALERT_SOON.includes(p.region||'');
+  return h.replace(/(<p class="demo-link" id="pkDemo"[^>]*>[\s\S]*?<\/p>)/,`$1<p class="demo-link" id="pkSoon" style="text-align:center;margin-top:8px">${soon?'시연: 단속 알림 제공 지역(성남시) 보기':'시연: 단속 알림 미제공 지역(이천시) 보기'}</p>`)};
+ S.parking.mount=(el,p)=>{const city=p.region||'성남시';
+  /* 04-4 단속 알림 팝업: 신청 완료 지역이면 노출하지 않음 */
+  if(p.popup&&isAlertDone(city))p.popShown=1;
+  m0&&m0(el,p);
+  const s=el.querySelector('#pkSoon');if(s)s.onclick=()=>{p.region=ALERT_SOON.includes(p.region||'')?'성남시':'이천시';render('fade')};
+  const d=el.querySelector('#rkDone');if(d)d.onclick=()=>modal({title:'단속 알림 신청을 완료하셨나요?',body:'<div style="text-align:center">지자체 사이트에서 신청을 마친 경우에만<br>완료로 표시해 주세요. 이후 이 지역에서는<br>단속 알림 팝업이 표시되지 않아요.</div>',cancel:'취소',ok:'신청 완료',onOk:()=>{setAlertDone(city,true);render('fade');toast(`${josaUl(city)} 신청 완료로 표시했어요`)}});
+  const c=el.querySelector('#rkCancel');if(c)c.onclick=()=>modal({title:'신청 완료를 취소할까요?',body:'<div style="text-align:center">취소하면 이 지역에서 단속 알림 팝업이<br>다시 표시돼요. 알림 서비스 해지는<br>지자체 사이트에서 직접 해야 해요.</div>',cancel:'닫기',ok:'신청 완료 취소',onOk:()=>{setAlertDone(city,false);render('fade');toast('신청 완료 표시를 취소했어요')}});}}
+/* 04-4 단속 알림 팝업: '알림 신청 완료' 버튼 추가(팝업 자체가 확인 단계라 재확인 없이 토스트) */
+new MutationObserver(()=>{const a=document.getElementById('ppA');if(!a||document.getElementById('ppDone'))return;
+ a.insertAdjacentHTML('afterend','<button class="btn btn-sub" id="ppDone" style="margin-top:8px">알림 신청 완료</button>');
+ document.getElementById('ppDone').onclick=()=>{const city=(cur().p&&cur().p.region)||'성남시';setAlertDone(city,true);$('#layer').innerHTML='';if(cur().id==='parking')render('fade');toast(`${josaUl(city)} 신청 완료로 표시했어요`)}}).observe(document.getElementById('layer'),{childList:true,subtree:true});
+/* 04-1 단속 알림: 피그마 기준 문구 정리 + 지역 버튼 → 하단 시트 */
+{const pb=parkAlertBody;parkAlertBody=function(p){return pb(p).replace('<span class="pill p-req">제휴 확인 중</span>','')
+  .replace(/<p class="small" style="line-height:18px;background:var\(--bg2\)[^"]*">구청·경찰서와의 제휴가[\s\S]*?<\/p>/,'')
+  .replace('단속 알림을 신청 할 지역을 선택해주세요.','단속 알림을 신청할 지역을 선택해주세요.')
+  .replace(/<p class="small muted" style="margin-top:14px">\* 지역 신청 현황은 예시 데이터[^<]*<\/p>/,'')
+  .replace('<h2 style="font-size:20px;font-weight:900;line-height:29px;margin-top:10px">','<h2 style="font-size:20px;font-weight:900;line-height:29px;margin-top:4px">')}}
+function alertCitySheet(city){const done=isAlertDone(city);
+ sheet(done?`<div class="as-h"><b>${city} 단속 알림을 신청했어요</b><p>신청 정보 변경이나 서비스 해지는<br>지자체 알림 서비스에서 할 수 있어요.</p></div><div class="as-b"><button class="out" data-as="web">지자체 알림 서비스 바로가기${EXT_IC('#111')}</button><button class="out" data-as="cancel">신청 완료 취소</button><button class="txt" data-as="close">닫기</button></div>`
+  :`<div class="as-h"><b>${city} 단속 알림</b><p>지자체 사이트에서 신청한 뒤 '신청 완료로 표시'를<br>눌러 주세요. 표시한 지역에서는 단속 알림 팝업이<br>표시되지 않아요.</p></div><div class="as-b"><button class="pri" data-as="web">신청하러 가기${EXT_IC('#fff')}</button><button class="out" data-as="done">신청 완료로 표시</button><button class="txt" data-as="close">닫기</button></div>`,
+  L=>L.querySelectorAll('[data-as]').forEach(b=>b.onclick=()=>{const k=b.dataset.as;$('#layer').innerHTML='';
+   if(k==='web')go('alertWeb',{city});
+   else if(k==='done'){setAlertDone(city,true);render('fade');toast(`${josaUl(city)} 신청 완료로 표시했어요`)}
+   else if(k==='cancel'){setAlertDone(city,false);render('fade');toastUndo('신청 완료 표시를 취소했어요',()=>{setAlertDone(city,true);render('fade')})}}))}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-city]');if(!c||cur().id!=='parking')return;e.stopImmediatePropagation();e.preventDefault();alertCitySheet(c.dataset.city)},true);
+
 render('fade');
 
 </script>
