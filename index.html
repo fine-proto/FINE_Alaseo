@@ -2112,13 +2112,13 @@ document.addEventListener('click',e=>{const c=e.target.closest('[data-city]');if
   if(d)d.onclick=()=>{if(st.mode==='driving'&&!p.forcePark){p.forcePark=1}else{st.parkZone=!st.parkZone;drawDemo()}render('fade')}}}
 document.addEventListener('click',e=>{if(e.target.closest('[data-zone]')&&cur().id==='parking')setTimeout(()=>render('fade'),0)});
 
-/* ================= 06-2 내차 정보: 헤더 우측 '차 삭제' → 06-2-1 확인 팝업 → 내 차 관리 정보 삭제 후 06-1 최초설정 (11.09)
+/* ================= 06-2 내차 정보: 헤더 우측 '차 삭제' → 06-2-1 확인 팝업 → 내 차 관리 정보 삭제 후 홈 복귀, 다음 '내 차 관리' 진입 시 06-1 최초설정 (11.09)
    블랙박스 등록 시 연결한 차량 핸즈프리(st.device.car)는 유지 ================= */
 {const r0=S.carInfo.render;S.carInfo.render=p=>{const h=r0(p),H0=hdr('내차 정보'),btn='<button id="carDel" style="font-size:15px;font-weight:700;color:#DC2626">차 삭제</button>';
   return h.includes(H0)?h.replace(H0,hdr('내차 정보',{right:btn})):h.replace(/(<div class="hdr[^"]*">[\s\S]*?)(<\/div>)/,`$1${btn}$2`)};
  const m0=S.carInfo.mount;S.carInfo.mount=(el,p)=>{m0&&m0(el,p);const b=el.querySelector('#carDel');if(!b)return;
   b.onclick=()=>modal({title:'내 차 정보를 삭제할까요?',body:'<div style="text-align:center">주행거리·정비·기록 등 내 차 관리에 저장된<br>정보가 모두 삭제되며 되돌릴 수 없어요.<br>블랙박스와 연결된 차량(핸즈프리)은 유지돼요.</div>',cancel:'취소',ok:'삭제',okCls:'mb-danger',
-   onOk:()=>{st.mycarSetup=false;st.recs=[['2026.11',[]],['2026.10',[]]];tab('mycar');setTimeout(()=>toast('내 차 정보를 삭제했어요'),250)}})}}
+   onOk:()=>{st.mycarSetup=false;st.recs=[['2026.11',[]],['2026.10',[]]];tab('home');setTimeout(()=>toast('내 차 정보를 삭제했어요'),250)}})}}
 
 render('fade');
 
