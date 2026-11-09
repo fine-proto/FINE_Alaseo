@@ -2033,6 +2033,10 @@ for(const id of ['maint','consum']){const d=S[id];if(!d)continue;const r0=d.rend
    .replace(/ⓘ 공공데이터 기준으로 실제와 다를 수 있습니다\. 현장 안내를 우선 확인해 주세요\./,'ⓘ 주정차 단속 정보가 없어도 단속될 수 있어요. 주차 전 현장 안내를 우선 확인해 주세요.')}
  return h.replace(/ⓘ 공공데이터 기준으로 실제와 다를 수 있습니다\. 현장 안내를 우선 확인해 주세요\./,'ⓘ 공공데이터 기준으로 실제와 다를 수 있어요. 주차 전 현장 안내를 우선 확인해 주세요.')}}
 
+/* ================= 04-4 단속 알림 팝업 안내 문구 (피그마 11.09) ================= */
+{const NEW44='ⓘ 공공데이터 기준으로 실제와 다를 수 있어요. 주차 전 현장 안내를 우선 확인해 주세요.';
+ new MutationObserver(()=>{const l=document.getElementById('layer');if(!l)return;l.querySelectorAll('.modal span.small').forEach(s=>{if(s.textContent.trim()==='ⓘ 공공데이터 기준으로 실제와 다를 수 있습니다.')s.textContent=NEW44})}).observe(document.getElementById('layer'),{childList:true,subtree:true})}
+
 render('fade');
 
 </script>
