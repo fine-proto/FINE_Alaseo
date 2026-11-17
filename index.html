@@ -3381,6 +3381,7 @@ document.addEventListener('click',e=>{const pk=e.target.closest('.ai9 [data-pick
  document.querySelectorAll('.a9-ty [data-t]').forEach(r=>r.onclick=()=>{f.type=r.dataset.t;p.changed=1;$('#layer').innerHTML='';render('fade')})},true);
 /* @@dz09.js@@ */
 
+
 /* @@dz08b.js@@ */
 /* ================= [피그마 13 반영 11.17] 영상 보관함: 필터 칩·정렬 토글·선택 모드·더보기(⋮) 팝업 ================= */
 document.head.insertAdjacentHTML('beforeend',`<style>
@@ -3389,11 +3390,11 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .v8-fc.on{background:#111;border-color:#111;color:#fff}.v8-fc.on svg *{stroke:#fff}
 .v8-so{margin-left:auto;font-size:14px;font-weight:500;color:#6B7280}.v8-dv{width:1px;height:14px;background:#E3E5E8}
 .v8-ck{width:22px;height:22px;border-radius:50%;border:1.5px solid #C4C8CE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:-2px}.v8-ck.on{background:var(--orange);border-color:var(--orange)}
-.v8-all{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:#8A9099;height:32px}
-.v8-bar{position:absolute;left:0;right:0;bottom:0;z-index:160;background:#fff;border-top:1px solid #E5E7EB;box-shadow:0 -2px 10px rgba(0,0,0,.06);display:flex;align-items:center;padding:10px 0 30px}
-.v8-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#111;padding:6px 0}.v8-bar button:disabled{opacity:.35}.v8-bar i{width:1px;height:28px;background:#E5E7EB}
+.v8-all{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:#8A9099;height:32px;cursor:pointer}.v8-all.on{color:var(--orange);font-weight:700}
+.v8-bar{position:absolute;left:0;right:0;bottom:0;z-index:160;background:#F2F3F5;display:flex;align-items:center;padding:8px 0 30px}
+.v8-bar button{flex:1;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;color:#111;padding:10px 0}.v8-bar button svg{width:20px;height:20px}.v8-bar button:disabled{opacity:.35}.v8-bar i{width:1px;height:18px;background:#D4D7DC}
 .v8-fs{padding:20px 20px 30px}.v8-fs b{display:block;font-size:18px;font-weight:700;margin-bottom:20px}
-.v8-chips{display:flex;flex-wrap:wrap;gap:10px 8px}.v8-chips button{height:38px;padding:0 18px;border:1px solid #D4D7DC;border-radius:999px;font-size:14px;font-weight:500;background:#fff;color:#111}.v8-chips button.on{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700}
+.v8-chips{display:flex;flex-wrap:wrap;gap:10px 8px}.v8-chips button{height:38px;padding:0 18px;border:1px solid #D4D7DC;border-radius:999px;font-size:14px;font-weight:500;background:#fff;color:#111}.v8-chips button.on{background:#FFF1E6;border-color:#FFF1E6;color:var(--orange);font-weight:700}
 .v8-btns{display:flex;gap:8px;margin-top:22px}.v8-btns button{height:48px;border-radius:6px;font-size:15px;font-weight:700}.v8-btns .rs{width:110px;border:1px solid #D4D7DC;background:#fff}.v8-btns .ap{flex:1;background:var(--orange);color:#fff}
 .v8-mp{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:350;display:flex;align-items:center;justify-content:center}
 .v8-mp .bx{width:300px;background:#fff;border-radius:14px;overflow:hidden}.v8-mp .it{display:flex;align-items:center;gap:14px;width:100%;padding:15px 24px;font-size:16px;font-weight:500;color:#111}
@@ -3419,7 +3420,7 @@ function v8Del(keys,after){const n=keys.length;
  $('#d8Y').onclick=()=>{$('#layer').innerHTML='';keys.map(k=>k.split(':').map(Number)).sort((a,b)=>b[0]-a[0]||b[1]-a[1]).forEach(([g,v])=>st.vault[g].items.splice(v,1));st.vault=st.vault.filter(g=>g.items.length);after&&after();render('fade');toast('삭제되었습니다.')}}
 function v8Share(n){const b=document.createElement('button');b.dataset.share=n>1?`보관함 영상 ${n}개`:'보관함 영상';b.style.display='none';document.body.appendChild(b);b.click();b.remove()}
 S.vault.render=()=>{const c=cur();const p=c.p||(c.p={});const isTab=!!S.vault.tab,sm=!!p.sm,sel=p.sel||[],gs=v8Groups(),all=gs.flatMap(g=>g.items.map(o=>o.gi+':'+o.vi));
- const tb=sm?`<div class="v8-tb" style="padding-top:8px"><span class="v8-all" id="v8All">전체 선택<span class="v8-ck ${all.length&&sel.length===all.length?'on':''}">${all.length&&sel.length===all.length?V8I.chk:''}</span></span><button style="margin-left:auto" id="v8X" aria-label="선택 종료">${V8I.x}</button></div>`
+ const tb=sm?`<div class="v8-tb" style="padding-top:8px"><span class="v8-all ${all.length&&sel.length===all.length?'on':''}" id="v8All">전체 선택<span class="v8-ck ${all.length&&sel.length===all.length?'on':''}">${all.length&&sel.length===all.length?V8I.chk:''}</span></span><button style="margin-left:auto" id="v8X" aria-label="선택 종료">${V8I.x}</button></div>`
   :`<div class="v8-tb"><button class="v8-fc ${st.vf==='ALL'?'':'on'}" id="v8F">${V8I.filter}<span>${st.vf==='ALL'?'전체':st.vf.length}</span></button><button class="v8-so" id="v8S">${st.vOld?'과거순':'최신순'}</button><span class="v8-dv"></span><button id="v8Sel" aria-label="선택">${V8I.sel}</button></div>`;
  return (isTab?'':hdr('영상 보관함'))+(isTab?'<div class="dz8-hd" style="background:#fff;flex-shrink:0;padding-bottom:12px">영상 보관함</div>':'')+tb+`<div class="body ${isTab&&!sm?'tabpad':''} dz8" style="padding:0 0 ${sm?120:isTab?110:30}px">
  ${gs.length?gs.map(g=>`<div class="dz8-d">${g.d}</div>${g.items.map(o=>{const k=o.gi+':'+o.vi,on=sel.includes(k);return `<div class="dz8-r" ${sm?`data-pk8="${k}"`:`data-go="player" ${gp({t:o.v[0],cam:o.v[2]||'Front',d:g.d})}`}><img src="${d8Img(o.v[2])}" alt=""><div class="tx">${d8Type(o.v[0])}<b>${o.v[1]}</b></div>${sm?`<span class="v8-ck ${on?'on':''}">${on?V8I.chk:''}</span>`:`<button data-more="${k}" aria-label="더보기">${V8I.kb}</button>`}</div>`}).join('')}`).join('')
