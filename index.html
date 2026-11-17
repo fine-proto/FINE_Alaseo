@@ -3380,6 +3380,73 @@ document.addEventListener('click',e=>{const pk=e.target.closest('.ai9 [data-pick
  $('[data-dim]').onclick=$('#tyX').onclick=()=>$('#layer').innerHTML='';
  document.querySelectorAll('.a9-ty [data-t]').forEach(r=>r.onclick=()=>{f.type=r.dataset.t;p.changed=1;$('#layer').innerHTML='';render('fade')})},true);
 /* @@dz09.js@@ */
+
+/* @@dz08b.js@@ */
+/* ================= [피그마 13 반영 11.17] 영상 보관함: 필터 칩·정렬 토글·선택 모드·더보기(⋮) 팝업 ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.v8-tb{display:flex;align-items:center;gap:12px;padding:4px 16px 12px;background:#fff;flex-shrink:0}
+.v8-fc{height:32px;padding:0 14px 0 12px;border:1px solid #D4D7DC;border-radius:999px;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#111;background:#fff}
+.v8-fc.on{background:#111;border-color:#111;color:#fff}.v8-fc.on svg *{stroke:#fff}
+.v8-so{margin-left:auto;font-size:14px;font-weight:500;color:#6B7280}.v8-dv{width:1px;height:14px;background:#E3E5E8}
+.v8-ck{width:22px;height:22px;border-radius:50%;border:1.5px solid #C4C8CE;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:-2px}.v8-ck.on{background:var(--orange);border-color:var(--orange)}
+.v8-all{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:#8A9099;height:32px}
+.v8-bar{position:absolute;left:0;right:0;bottom:0;z-index:160;background:#fff;border-top:1px solid #E5E7EB;box-shadow:0 -2px 10px rgba(0,0,0,.06);display:flex;align-items:center;padding:10px 0 30px}
+.v8-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#111;padding:6px 0}.v8-bar button:disabled{opacity:.35}.v8-bar i{width:1px;height:28px;background:#E5E7EB}
+.v8-fs{padding:20px 20px 30px}.v8-fs b{display:block;font-size:18px;font-weight:700;margin-bottom:20px}
+.v8-chips{display:flex;flex-wrap:wrap;gap:10px 8px}.v8-chips button{height:38px;padding:0 18px;border:1px solid #D4D7DC;border-radius:999px;font-size:14px;font-weight:500;background:#fff;color:#111}.v8-chips button.on{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700}
+.v8-btns{display:flex;gap:8px;margin-top:22px}.v8-btns button{height:48px;border-radius:6px;font-size:15px;font-weight:700}.v8-btns .rs{width:110px;border:1px solid #D4D7DC;background:#fff}.v8-btns .ap{flex:1;background:var(--orange);color:#fff}
+.v8-mp{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:350;display:flex;align-items:center;justify-content:center}
+.v8-mp .bx{width:300px;background:#fff;border-radius:14px;overflow:hidden}.v8-mp .it{display:flex;align-items:center;gap:14px;width:100%;padding:15px 24px;font-size:16px;font-weight:500;color:#111}
+.v8-mp .cx{display:block;width:100%;border-top:1px solid #EEF0F2;padding:14px 0 16px;font-size:16px;font-weight:700}
+</style>`);
+const V8CAT=['주행일반','주행충격','긴급녹화','주차모션','주차충격','AI자동녹화'];
+const v8Lb=c=>c==='AI자동녹화'?'AI 자동녹화':c.replace(/^(주행|주차|긴급)/,'$1 ');
+const V8I={filter:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><path d="M3 7h10M17 7h4M3 17h4M11 17h10"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg>',
+ sel:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h.01M3 12h.01M3 18h.01M7 6h13M7 12h8M7 18h4"/><path d="m14 20 1-3.5 5.5-5.5 2.5 2.5-5.5 5.5Z"/></svg>',
+ x:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+ kb:'<svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.7" fill="#8A9099"/><circle cx="10" cy="10" r="1.7" fill="#8A9099"/><circle cx="10" cy="16" r="1.7" fill="#8A9099"/></svg>',
+ chk:'<svg width="11" height="9" viewBox="0 0 12 9" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 4.5 3.5 3.5L11 1"/></svg>',
+ trash:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v7M14 10v7"/></svg>',
+ share:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linejoin="round"><path d="M14 4v4C7 9 4 13 3 20c2.5-3.5 5.5-5 11-5v4l7-7.5Z"/></svg>'};
+st.vf=st.vf||'ALL';st.vOld=!!st.vOld;
+const v8Norm=t=>String(t||'').replace(/\s/g,'');
+/* 정렬·필터 적용한 목록 [{d, items:[{v,gi,vi}]}] */
+function v8Groups(){const gs=st.vault.map((g,gi)=>({d:g.d,items:g.items.map((v,vi)=>({v,gi,vi})).filter(o=>st.vf==='ALL'||st.vf.includes(v8Norm(o.v[0])))})).filter(g=>g.items.length);
+ if(st.vOld){gs.reverse();gs.forEach(g=>g.items.reverse())}return gs}
+function v8Del(keys,after){const n=keys.length;
+ $('#layer').innerHTML=`<div class="dz8-pop" data-dim><div class="bx" onclick="event.stopPropagation()"><b>영상 삭제</b><p>선택한 영상${n>1?` ${n}개를`:'을'} 삭제하시겠습니까?<br>삭제한 영상은 복구할 수 없습니다.</p><div class="ft"><button id="d8N">취소</button><button id="d8Y">삭제</button></div></div></div>`;
+ $('#d8N').onclick=$('[data-dim]').onclick=()=>$('#layer').innerHTML='';
+ $('#d8Y').onclick=()=>{$('#layer').innerHTML='';keys.map(k=>k.split(':').map(Number)).sort((a,b)=>b[0]-a[0]||b[1]-a[1]).forEach(([g,v])=>st.vault[g].items.splice(v,1));st.vault=st.vault.filter(g=>g.items.length);after&&after();render('fade');toast('삭제되었습니다.')}}
+function v8Share(n){const b=document.createElement('button');b.dataset.share=n>1?`보관함 영상 ${n}개`:'보관함 영상';b.style.display='none';document.body.appendChild(b);b.click();b.remove()}
+S.vault.render=()=>{const c=cur();const p=c.p||(c.p={});const isTab=!!S.vault.tab,sm=!!p.sm,sel=p.sel||[],gs=v8Groups(),all=gs.flatMap(g=>g.items.map(o=>o.gi+':'+o.vi));
+ const tb=sm?`<div class="v8-tb" style="padding-top:8px"><span class="v8-all" id="v8All">전체 선택<span class="v8-ck ${all.length&&sel.length===all.length?'on':''}">${all.length&&sel.length===all.length?V8I.chk:''}</span></span><button style="margin-left:auto" id="v8X" aria-label="선택 종료">${V8I.x}</button></div>`
+  :`<div class="v8-tb"><button class="v8-fc ${st.vf==='ALL'?'':'on'}" id="v8F">${V8I.filter}<span>${st.vf==='ALL'?'전체':st.vf.length}</span></button><button class="v8-so" id="v8S">${st.vOld?'과거순':'최신순'}</button><span class="v8-dv"></span><button id="v8Sel" aria-label="선택">${V8I.sel}</button></div>`;
+ return (isTab?'':hdr('영상 보관함'))+(isTab?'<div class="dz8-hd" style="background:#fff;flex-shrink:0;padding-bottom:12px">영상 보관함</div>':'')+tb+`<div class="body ${isTab&&!sm?'tabpad':''} dz8" style="padding:0 0 ${sm?120:isTab?110:30}px">
+ ${gs.length?gs.map(g=>`<div class="dz8-d">${g.d}</div>${g.items.map(o=>{const k=o.gi+':'+o.vi,on=sel.includes(k);return `<div class="dz8-r" ${sm?`data-pk8="${k}"`:`data-go="player" ${gp({t:o.v[0],cam:o.v[2]||'Front',d:g.d})}`}><img src="${d8Img(o.v[2])}" alt=""><div class="tx">${d8Type(o.v[0])}<b>${o.v[1]}</b></div>${sm?`<span class="v8-ck ${on?'on':''}">${on?V8I.chk:''}</span>`:`<button data-more="${k}" aria-label="더보기">${V8I.kb}</button>`}</div>`}).join('')}`).join('')
+  :`<div class="empty">${st.vault.length?'선택한 카테고리의 영상이 없어요.':'보관함에 저장한 영상이 없어요.'}</div>`}</div>`
+  +(sm?`<div class="v8-bar"><button id="v8D" ${sel.length?'':'disabled'}>${V8I.trash}삭제</button><i></i><button id="v8Sh" ${sel.length?'':'disabled'}>${V8I.share}공유</button></div>`:'')};
+S.vault.mount=el=>{const c=cur();const p=c.p||(c.p={});const tbar=$('#tabbar');if(tbar&&S.vault.tab)tbar.style.display=p.sm?'none':'';
+ const q=s=>el.querySelector(s);
+ if(!p.sm){
+  q('#v8S').onclick=()=>{st.vOld=!st.vOld;render('fade')};
+  q('#v8Sel').onclick=()=>{p.sm=1;p.sel=[];render('fade')};
+  q('#v8F').onclick=()=>{let s=st.vf==='ALL'?[]:[...st.vf];
+   sheet(`<div class="v8-fs"><b>영상 카테고리</b><div class="v8-chips"></div><div class="v8-btns"><button class="rs" id="v8R">초기화</button><button class="ap" id="v8A">적용</button></div></div>`,L=>{
+    const draw=()=>{L.querySelector('.v8-chips').innerHTML=V8CAT.map(c=>`<button class="${s.includes(c)?'on':''}" data-c="${c}">${v8Lb(c)}</button>`).join('');L.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const c=b.dataset.c;s=s.includes(c)?s.filter(z=>z!==c):[...s,c];draw()})};draw();
+    L.querySelector('#v8R').onclick=()=>{s=[];draw()};L.querySelector('#v8A').onclick=()=>{$('#layer').innerHTML='';st.vf=s.length&&s.length<V8CAT.length?V8CAT.filter(c=>s.includes(c)):'ALL';render('fade')}})};
+  el.querySelectorAll('[data-more]').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.more;
+   $('#layer').innerHTML=`<div class="v8-mp" data-dim><div class="bx" onclick="event.stopPropagation()"><div style="padding-top:10px"><button class="it" data-m="share">${V8I.share.replace('width="24" height="24"','width="22" height="22"')}공유</button><button class="it" data-m="del">${V8I.trash.replace('width="24" height="24"','width="22" height="22"')}영상 삭제</button></div><button class="cx" data-m="x">취소</button></div></div>`;
+   $('[data-dim]').onclick=()=>$('#layer').innerHTML='';document.querySelectorAll('[data-m]').forEach(m=>m.onclick=()=>{$('#layer').innerHTML='';if(m.dataset.m==='share')v8Share(1);else if(m.dataset.m==='del')v8Del([k])})});
+ }else{
+  const all=[...el.querySelectorAll('[data-pk8]')].map(r=>r.dataset.pk8);
+  el.querySelectorAll('[data-pk8]').forEach(r=>r.onclick=()=>{const k=r.dataset.pk8;p.sel=p.sel.includes(k)?p.sel.filter(x=>x!==k):[...p.sel,k];render('fade')});
+  q('#v8All').onclick=()=>{p.sel=p.sel.length===all.length?[]:[...all];render('fade')};
+  q('#v8X').onclick=()=>{p.sm=0;p.sel=[];render('fade')};
+  q('#v8D').onclick=()=>v8Del(p.sel,()=>{p.sm=0;p.sel=[]});
+  q('#v8Sh').onclick=()=>v8Share(p.sel.length)}};
+/* 보관함을 벗어나면 탭바 복구 */
+{const _r=render;render=function(d){const t=$('#tabbar');if(t)t.style.display='';return _r.apply(this,arguments)}}
+/* @@dz08b.js@@ */
 render('fade');
 
 </script>
